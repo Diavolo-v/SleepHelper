@@ -46,7 +46,7 @@ int selectedScreen = 0;
 SleepSession sleepsession;
 Screen currentScreen = HOME;
 
-Clock myClock(16, 10, 0);
+Clock myClock(18, 10, 0);
 
 void updateNextButton()
 {
@@ -123,7 +123,7 @@ void updateSelectButton()
 
 void setup()
 {
-
+  Serial.begin(9600);
   pinMode(NEXT_BUTTON_PIN, INPUT_PULLUP);
   pinMode(SELECT_BUTTON, INPUT_PULLUP);
   if (!display.begin(SSD1306_SWITCHCAPVCC, 0x3C))
@@ -144,10 +144,20 @@ void loop()
   myClock.update();
   sensors.update();
   SensorData data = sensors.getCurrentData();
-
+  sleepsession.update(data);
   updateNextButton();
   updateSelectButton();
   display.clearDisplay();
+
+  if (sleepsession.isActive())
+  {
+    static unsigned long lastPrint = 0;
+    if (millis() - lastPrint >= 5000)
+    {
+      sleepsession.printMeasurements();
+      lastPrint = millis();
+    }
+  }
 
   if (uistate == MENU)
   {

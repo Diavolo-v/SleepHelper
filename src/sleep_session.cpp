@@ -15,7 +15,7 @@ void SleepSession::start(int hours, int minutes, int seconds)
     lastEnvironmentMeasurement = millis();
     lastLightMeasurement = millis();
     lastCo2Measurement = millis();
-    lastNoiseMasurement = millis();
+    lastNoiseMeasurement = millis();
     state = RUNNING;
 }
 void SleepSession::end(int hours, int minutes, int seconds)
@@ -27,7 +27,7 @@ void SleepSession::end(int hours, int minutes, int seconds)
 
     endTime.hours = hours;
     endTime.minutes = minutes;
-    endTime.seconds = minutes;
+    endTime.seconds = seconds;
     state = FINISHED;
 }
 void SleepSession::update(const SensorData &data)
@@ -37,28 +37,93 @@ void SleepSession::update(const SensorData &data)
         return;
     }
     unsigned long currentTime = millis();
+    bool updateEnvironment = false;
+    bool updateLight = false;
 
-    if (currentTime - lastEnvironmentMeasurement > envionmentalInterval)
+    if (currentTime - lastEnvironmentMeasurement > environmentalInterval)
     {
-
+        updateEnvironment = true;
         lastEnvironmentMeasurement = currentTime;
     }
 
     if (currentTime - lastLightMeasurement > lightInterval)
     {
+        updateLight = true;
         lastLightMeasurement = currentTime;
     }
-    if (currentTime - lastNoiseMasurement > noiseInterval)
+
+    if (updateEnvironment || updateLight)
     {
-        lastNoiseMasurement = currentTime;
+        if (measurementCount < MAX_MEASUREMENTS)
+        {
+            Measurement &measurement = measurements[measurementCount];
+            measurement.timeStamp = currentTime;
+            measurement.hasTemperature = updateEnvironment;
+            measurement.hasHumidity = updateEnvironment;
+            measurement.hasLight = updateLight;
+
+            if (updateEnvironment)
+            {
+                measurement.temperature = data.temperature;
+                measurement.humidity = data.humidity;
+            }
+            if (updateLight)
+            {
+                measurement.light = data.light;
+            }
+            measurementCount++;
+        }
     }
-    if (currentTime - lastCo2Measurement > co2Interval)
-    {
-        lastCo2Measurement = currentTime;
-    }
+    // if (currentTime - lastNoiseMeasurement > noiseInterval)
+    // {
+    //     lastNoiseMeasurement = currentTime;
+    // }
+    // if (currentTime - lastCo2Measurement > co2Interval)
+    // {
+    //     lastCo2Measurement = currentTime;
+    // }
 }
 
 bool SleepSession::isActive()
 {
     return state == RUNNING;
+}
+
+// test function
+void SleepSession::printMeasurements()
+{
+    for (int i = 0; i < measurementCount; i++)
+    {
+        Serial.print("Measurement ");
+        Serial.println(i);
+
+        Serial.print("Temprerature: ");
+        if (measurements[i].hasTemperature)
+        {
+            Serial.println(measurements[i].temperature);
+        }
+        else
+        {
+            Serial.println("N/A");
+        }
+        Serial.print("Humidity: ");
+        if (measurements[i].hasHumidity)
+        {
+            Serial.println(measurements[i].humidity);
+        }
+        else
+        {
+            Serial.println("N/A");
+        }
+        Serial.print("Light: ");
+        if (measurements[i].hasLight)
+        {
+            Serial.println(measurements[i].light);
+        }
+        else
+        {
+            Serial.println("N/A");
+        }
+        Serial.println("------------------");
+    }
 }

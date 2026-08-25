@@ -1,6 +1,7 @@
 #ifndef SLEEO_SESSION
 #define SLEEP_SESSION
 #include "sensors.h"
+#define MAX_MEASUREMENTS 100
 enum SleepSessionState
 {
     IDLE,
@@ -20,14 +21,16 @@ private:
     SleepSessionState state;
     Time startTime;
     Time endTime;
+    Measurement measurements[MAX_MEASUREMENTS];
+    int measurementCount = 0;
 
     unsigned long lastEnvironmentMeasurement;
     unsigned long lastLightMeasurement;
-    unsigned long lastNoiseMasurement;
+    unsigned long lastNoiseMeasurement;
     unsigned long lastCo2Measurement;
 
-    const unsigned long envionmentalInterval = 30UL * 60UL * 1000UL;
-    const unsigned long lightInterval = 5UL * 60UL * 1000UL;
+    const unsigned long environmentalInterval = 10000;
+    const unsigned long lightInterval = 3000;
     const unsigned long noiseInterval = 5UL * 60UL * 1000UL;
     const unsigned long co2Interval = 5UL * 60UL * 1000UL;
 
@@ -37,6 +40,7 @@ public:
     void start(int hours, int minutes, int seconds);
     void end(int hours, int minutes, int seconds);
     bool isActive();
+    void printMeasurements();
 };
 
 #endif
