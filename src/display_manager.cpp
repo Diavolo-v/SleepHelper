@@ -103,3 +103,43 @@ void DisplayManager::drawSettings()
     display->print("Settings");
     display->display();
 }
+
+void DisplayManager::drawMenu(int selectedScreen)
+{
+    display->setTextSize(1);
+
+    display->setCursor(5, 0);
+    display->print("MENU");
+
+    display->setCursor(10, 12);
+    if (selectedScreen == 0)
+        display->print("> HOME");
+    else
+        display->print(" HOME");
+
+    display->setCursor(10, 22);
+    if (selectedScreen == 1)
+        display->print("> NIGHT MODE");
+    else
+        display->print(" NIGHT MODE");
+
+    display->setCursor(10, 32);
+    if (selectedScreen == 2)
+        display->print("> STATISTICS");
+    else
+        display->print(" STATISTICS");
+
+    display->setCursor(10, 42);
+    if (selectedScreen == 3)
+        display->print("> ALARM");
+    else
+        display->print(" ALARM");
+
+    display->setCursor(10, 52);
+    if (selectedScreen == 4)
+        display->print("> SETTINGS");
+    else
+        display->print(" SETTINGS");
+
+    display->display();
+}

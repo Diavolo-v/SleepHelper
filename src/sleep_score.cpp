@@ -26,10 +26,7 @@ int SleepScore::calculateSleepDuration(int hours)
     {
         return 12;
     }
-    if (hours > 10)
-    {
-        return 8;
-    }
+    return 8;
 }
 int SleepScore::calculateTotalScore()
 {

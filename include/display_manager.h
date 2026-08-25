@@ -16,6 +16,7 @@ public:
         int hours,
         int minutes,
         int seconds);
+    void drawMenu(int selectedScreen);
 
     void drawNightMode(int hours, int minutes, int seconds);
     void drawStatistics();
