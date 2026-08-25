@@ -1,0 +1,35 @@
+# SleepHelper 🌙
+
+SleepHelper is a personal embedded project built with **ESP32**. Its goal is to monitor sleep-related environmental conditions and calculate a **Sleep Score** based on multiple factors.
+
+## Current features
+
+- OLED display with custom UI
+- Digital clock
+- Temperature & humidity monitoring
+- Light level monitoring
+- Menu navigation with buttons
+- Button debouncing
+- Modular C++ architecture
+- Sleep Score system _(in development)_
+
+## Planned features
+
+- Sleep Score calculation
+- Alarm with sound output
+- Automatic sleep/environment monitoring
+- CO₂ and noise monitoring
+- Configurable settings
+- Persistent data storage
+- Mobile application _(later)_
+
+## Technologies
+
+- **ESP32**
+- **C++ / Arduino**
+- **PlatformIO**
+- **OLED 128×64**
+- **DHT22**
+- Various analog/digital sensors
+
+> 🚧 SleepHelper is currently a work in progress.
