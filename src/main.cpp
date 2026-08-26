@@ -111,6 +111,11 @@ void updateSelectButton()
         }
         else if (uistate == SCREEN_VIEW)
         {
+          if (currentScreen == NIGHT_MODE && sleepsession.isActive())
+          {
+            sleepsession.end(myClock.getHours(), myClock.getMinutes(), myClock.getSeconds());
+            Serial.println("sleep session ended");
+          }
           uistate = MENU;
         }
       }
@@ -145,19 +150,14 @@ void loop()
   sensors.update();
   SensorData data = sensors.getCurrentData();
   sleepsession.update(data);
+  if (sleepsession.newMeasurement())
+  {
+    sleepsession.printMeasurements();
+  }
+
   updateNextButton();
   updateSelectButton();
   display.clearDisplay();
-
-  if (sleepsession.isActive())
-  {
-    static unsigned long lastPrint = 0;
-    if (millis() - lastPrint >= 5000)
-    {
-      sleepsession.printMeasurements();
-      lastPrint = millis();
-    }
-  }
 
   if (uistate == MENU)
   {

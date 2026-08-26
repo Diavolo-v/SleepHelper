@@ -39,6 +39,7 @@ void SleepSession::update(const SensorData &data)
     unsigned long currentTime = millis();
     bool updateEnvironment = false;
     bool updateLight = false;
+    hasNewMeasurement = false;
 
     if (currentTime - lastEnvironmentMeasurement > environmentalInterval)
     {
@@ -72,6 +73,7 @@ void SleepSession::update(const SensorData &data)
                 measurement.light = data.light;
             }
             measurementCount++;
+            hasNewMeasurement = true;
         }
     }
     // if (currentTime - lastNoiseMeasurement > noiseInterval)
@@ -83,7 +85,10 @@ void SleepSession::update(const SensorData &data)
     //     lastCo2Measurement = currentTime;
     // }
 }
-
+bool SleepSession::newMeasurement()
+{
+    return hasNewMeasurement;
+}
 bool SleepSession::isActive()
 {
     return state == RUNNING;
@@ -92,38 +97,93 @@ bool SleepSession::isActive()
 // test function
 void SleepSession::printMeasurements()
 {
+    if (measurementCount == 0)
+    {
+        return;
+    }
+
+    int lastMeasuredIndex = measurementCount - 1;
+    Serial.print("Measurement ");
+    Serial.println(measurementCount);
+
+    Serial.print("Temprerature: ");
+    if (measurements[lastMeasuredIndex].hasTemperature)
+    {
+        Serial.println(measurements[lastMeasuredIndex].temperature);
+    }
+    else
+    {
+        Serial.println("N/A");
+    }
+    Serial.print("Humidity: ");
+    if (measurements[lastMeasuredIndex].hasHumidity)
+    {
+        Serial.println(measurements[lastMeasuredIndex].humidity);
+    }
+    else
+    {
+        Serial.println("N/A");
+    }
+    Serial.print("Light: ");
+    if (measurements[lastMeasuredIndex].hasLight)
+    {
+        Serial.println(measurements[lastMeasuredIndex].light);
+    }
+    else
+    {
+        Serial.println("N/A");
+    }
+    Serial.println("------------------");
+}
+
+float SleepSession::getAverageTemperature()
+{
+    int recordCount = 0;
+    float sumOfTemp = 0;
+    float averageTemp = 0;
     for (int i = 0; i < measurementCount; i++)
     {
-        Serial.print("Measurement ");
-        Serial.println(i);
-
-        Serial.print("Temprerature: ");
         if (measurements[i].hasTemperature)
         {
-            Serial.println(measurements[i].temperature);
+            sumOfTemp += measurements[i].temperature;
+            recordCount++;
         }
-        else
-        {
-            Serial.println("N/A");
-        }
-        Serial.print("Humidity: ");
+    }
+    averageTemp = sumOfTemp / recordCount;
+    return averageTemp;
+}
+
+float SleepSession::getAverageHumidity()
+{
+    int recordCount = 0;
+    float sumOfHumidity = 0;
+    float averageHumidity = 0;
+
+    for (int i = 0; i < measurementCount; i++)
+    {
         if (measurements[i].hasHumidity)
         {
-            Serial.println(measurements[i].humidity);
+            sumOfHumidity += measurements[i].humidity;
+            recordCount++;
         }
-        else
-        {
-            Serial.println("N/A");
-        }
-        Serial.print("Light: ");
+    }
+    averageHumidity = sumOfHumidity / recordCount;
+    return averageHumidity;
+}
+float SleepSession::getAverageLight()
+{
+    int recordCount = 0;
+    float sumOfLight = 0;
+    float averageLight = 0;
+
+    for (int i = 0; i < measurementCount; i++)
+    {
         if (measurements[i].hasLight)
         {
-            Serial.println(measurements[i].light);
+            sumOfLight += measurements[i].light;
+            recordCount++;
         }
-        else
-        {
-            Serial.println("N/A");
-        }
-        Serial.println("------------------");
     }
+    averageLight = sumOfLight / recordCount;
+    return averageLight;
 }

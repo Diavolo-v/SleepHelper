@@ -23,6 +23,7 @@ private:
     Time endTime;
     Measurement measurements[MAX_MEASUREMENTS];
     int measurementCount = 0;
+    bool hasNewMeasurement = false;
 
     unsigned long lastEnvironmentMeasurement;
     unsigned long lastLightMeasurement;
@@ -41,6 +42,10 @@ public:
     void end(int hours, int minutes, int seconds);
     bool isActive();
     void printMeasurements();
+    bool newMeasurement();
+    float getAverageTemperature();
+    float getAverageHumidity();
+    float getAverageLight();
 };
 
 #endif

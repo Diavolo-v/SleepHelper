@@ -10,15 +10,15 @@ public:
     SleepScore();
     int calculateSleepDuration(int hours);
     int calculateSleepSchedule();
-    int calculateLightExposure();
+    int calculateLightExposure(float averageLight);
     int calculateNoiseExposure();
-    int calculateTemperature();
-    int calculateHumidity();
+    int calculateTemperature(float averageTemp);
+    int calculateHumidity(float averageHumidity);
     int calculatePhoneUsageBeforeBed();
     int calculateCarbonDioxide();
     int phoneLeftonDevice();
     int userOpinionOnSleep();
-    int calculateTotalScore();
+    int calculateTotalScore(int avgTemp, int avgHum);
     int returnTotalScore();
 };
 

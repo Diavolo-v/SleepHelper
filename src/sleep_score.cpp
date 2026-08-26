@@ -1,5 +1,8 @@
 #include "sleep_score.h"
-
+SleepScore::SleepScore()
+{
+    score = 0;
+}
 int SleepScore::calculateSleepDuration(int hours)
 {
     if (hours < 4)
@@ -28,11 +31,48 @@ int SleepScore::calculateSleepDuration(int hours)
     }
     return 8;
 }
-int SleepScore::calculateTotalScore()
+
+int SleepScore::calculateTemperature(float averageTemp)
+{
+    if (averageTemp < 15)
+    {
+        return 5;
+    }
+    if (averageTemp <= 19)
+    {
+        return 10;
+    }
+    if (averageTemp < 21)
+    {
+        return 3;
+    }
+
+    return 1;
+}
+
+int SleepScore::calculateHumidity(float averageHumidity)
+{
+    if (averageHumidity < 30)
+    {
+        return 1;
+    }
+    if (averageHumidity <= 50)
+    {
+        return 8;
+    }
+    if (averageHumidity <= 60)
+    {
+        return 6;
+    }
+    return 1;
+}
+
+int SleepScore::calculateTotalScore(int avgTemp, int avgHum)
 {
     int total = 0;
 
-    // total += calculateSleepDuration();
+    total += calculateTemperature(avgTemp);
+    total += calculateHumidity(avgHum);
 
     return total;
 }
