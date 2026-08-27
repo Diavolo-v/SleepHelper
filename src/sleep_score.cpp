@@ -3,29 +3,29 @@ SleepScore::SleepScore()
 {
     score = 0;
 }
-int SleepScore::calculateSleepDuration(int hours)
+int SleepScore::calculateSleepDuration(float time)
 {
-    if (hours < 4)
+    if (time < 4)
     {
         return 0;
     }
-    if (hours <= 5)
+    if (time <= 5)
     {
         return 4;
     }
-    if (hours <= 6)
+    if (time <= 6)
     {
         return 8;
     }
-    if (hours <= 7)
+    if (time <= 7)
     {
         return 12;
     }
-    if (hours <= 9)
+    if (time <= 9)
     {
         return 15;
     }
-    if (hours <= 10)
+    if (time <= 10)
     {
         return 12;
     }
@@ -67,13 +67,14 @@ int SleepScore::calculateHumidity(float averageHumidity)
     return 1;
 }
 
-int SleepScore::calculateTotalScore(int avgTemp, int avgHum)
+int SleepScore::calculateTotalScore(float sleepDuration, int avgTemp, int avgHum)
 {
     int total = 0;
 
+    total += calculateSleepDuration(sleepDuration);
     total += calculateTemperature(avgTemp);
     total += calculateHumidity(avgHum);
-
+    score = total;
     return total;
 }
 

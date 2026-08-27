@@ -7,6 +7,8 @@ SleepSession::SleepSession()
 
 void SleepSession::start(int hours, int minutes, int seconds)
 {
+    measurementCount = 0;
+    summary = {};
 
     startTime.hours = hours;
     startTime.minutes = minutes;
@@ -28,6 +30,8 @@ void SleepSession::end(int hours, int minutes, int seconds)
     endTime.hours = hours;
     endTime.minutes = minutes;
     endTime.seconds = seconds;
+
+    calculateSummary();
     state = FINISHED;
 }
 void SleepSession::update(const SensorData &data)
@@ -186,4 +190,33 @@ float SleepSession::getAverageLight()
     }
     averageLight = sumOfLight / recordCount;
     return averageLight;
+}
+int SleepSession::getSleepDurationSeconds()
+{
+    int startSeconds = startTime.hours * 3600 + startTime.minutes * 60 + startTime.seconds;
+    int endSeconds = endTime.hours * 3600 + endTime.minutes * 60 + endTime.seconds;
+
+    int totalSleepSeconds = endSeconds - startSeconds;
+
+    if (totalSleepSeconds < 0)
+    {
+        totalSleepSeconds += 24 * 3600;
+    }
+    return totalSleepSeconds;
+}
+float SleepSession::getTotalSleepDuration()
+{
+    return getSleepDurationSeconds() / 3600.0f;
+}
+
+void SleepSession::calculateSummary()
+{
+    summary.durationHours = getTotalSleepDuration();
+    summary.averageTemp = getAverageTemperature();
+    summary.averageHum = getAverageHumidity();
+    summary.averageLight = getAverageLight();
+}
+Summary SleepSession::getSummary()
+{
+    return summary;
 }

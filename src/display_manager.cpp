@@ -4,8 +4,7 @@
 #include <Wire.h>
 #include "clock.h"
 extern Clock myClock;
-extern SleepSession sleepsession;
-SleepScore sleepscore;
+
 DisplayManager::DisplayManager(Adafruit_SSD1306 *display)
 {
     this->display = display;
@@ -92,24 +91,24 @@ void DisplayManager::drawAlarm()
     display->display();
 }
 
-void DisplayManager::drawStatistics()
+void DisplayManager::drawStatistics(const Summary &summary, int score)
 {
 
     display->setTextSize(1);
     display->setCursor(20, 0);
     display->print("SLEEP STATISTICS");
     display->setCursor(5, 14);
-    display->print(sleepsession.getAverageTemperature(), 1);
+    display->print(summary.averageTemp, 1);
     display->println(" C");
     display->setCursor(5, 25);
-    display->print(sleepsession.getAverageHumidity(), 1);
+    display->print(summary.averageHum, 1);
     display->println(" %");
     display->setCursor(5, 36);
-    display->print(sleepsession.getAverageLight(), 1);
+    display->print(summary.averageLight, 0);
     display->println(" LUX");
     display->setCursor(5, 51);
     display->print("Today's sleep score: ");
-    display->print(sleepscore.calculateTotalScore(sleepsession.getAverageTemperature(), sleepsession.getAverageHumidity()));
+    display->print(score);
     display->print(" / 100");
     display->display();
 }

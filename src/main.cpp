@@ -6,6 +6,7 @@
 #include "display_manager.h"
 #include "sensor_manager.h"
 #include "sleep_session.h"
+#include "sleep_score.h"
 #define LED_PIN 2
 #define POT_PIN 34
 #define NEXT_BUTTON_PIN 4
@@ -24,6 +25,8 @@ const unsigned long debounceDelay = 50;
 
 Adafruit_SSD1306 display(128, 64, &Wire, -1);
 SensorManager sensors;
+Summary summary;
+SleepScore sleepscore;
 DisplayManager displayManager(&display);
 
 enum UIState
@@ -114,6 +117,8 @@ void updateSelectButton()
           if (currentScreen == NIGHT_MODE && sleepsession.isActive())
           {
             sleepsession.end(myClock.getHours(), myClock.getMinutes(), myClock.getSeconds());
+            summary = sleepsession.getSummary();
+            sleepscore.calculateTotalScore(summary.durationHours, summary.averageTemp, summary.averageHum);
             Serial.println("sleep session ended");
           }
           uistate = MENU;
@@ -174,7 +179,7 @@ void loop()
       displayManager.drawNightMode(myClock.getHours(), myClock.getMinutes(), myClock.getSeconds());
       break;
     case STATISTICS:
-      displayManager.drawStatistics();
+      displayManager.drawStatistics(summary, sleepscore.returnTotalScore());
       break;
     case ALARM:
       displayManager.drawAlarm();

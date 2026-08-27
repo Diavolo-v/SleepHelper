@@ -1,5 +1,4 @@
-#ifndef SLEEO_SESSION
-#define SLEEP_SESSION
+#pragma once
 #include "sensors.h"
 #define MAX_MEASUREMENTS 100
 enum SleepSessionState
@@ -14,11 +13,19 @@ struct Time
     int minutes;
     int seconds;
 };
+struct Summary
+{
+    float durationHours;
+    float averageTemp;
+    float averageHum;
+    float averageLight;
+};
 
 class SleepSession
 {
 private:
     SleepSessionState state;
+    Summary summary;
     Time startTime;
     Time endTime;
     Measurement measurements[MAX_MEASUREMENTS];
@@ -46,6 +53,8 @@ public:
     float getAverageTemperature();
     float getAverageHumidity();
     float getAverageLight();
+    int getSleepDurationSeconds();
+    float getTotalSleepDuration();
+    void calculateSummary();
+    Summary getSummary();
 };
-
-#endif
