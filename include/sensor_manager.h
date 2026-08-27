@@ -10,6 +10,8 @@ public:
     SensorManager();
     void update();
     SensorData getCurrentData();
+    int readCO2();
+    int readNoise();
 };
 
 #endif

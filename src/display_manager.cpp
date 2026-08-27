@@ -129,8 +129,28 @@ void DisplayManager::drawStatistics(const Summary &summary, int score)
     {
         display->println("N/A");
     }
+    display->setCursor(60, 14);
+    if (summary.hasCO2)
+    {
+        display->print(summary.averageCO2, 1);
+        display->println(" ppm");
+    }
+    else
+    {
+        display->println("N/A");
+    }
+    display->setCursor(60, 25);
+    if (summary.hasNoise)
+    {
+        display->print(summary.averageNoise, 1);
+        display->println(" dB");
+    }
+    else
+    {
+        display->println("N/A");
+    }
 
-    display->setCursor(5, 51);
+    display->setCursor(5, 49);
     display->print("Today's sleep score: ");
     display->print(score);
     display->print(" / 100");

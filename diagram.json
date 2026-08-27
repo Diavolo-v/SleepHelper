@@ -62,7 +62,14 @@
       "left": 137.9,
       "rotate": 90,
       "attrs": { "color": "green", "xray": "1" }
-    }
+    },
+{
+  "type": "wokwi-potentiometer",
+  "id": "co2Pot",
+  "top": -183.7,
+  "left": 100,
+  "attrs": {}
+}
   ],
   "connections": [
     [ "esp:TX", "$serialMonitor:RX", "", [] ],
@@ -104,7 +111,11 @@
     [ "btn2:1.l", "bb1:20t.b", "", [ "$bb" ] ],
     [ "btn2:2.l", "bb1:18t.b", "", [ "$bb" ] ],
     [ "btn2:1.r", "bb1:20b.g", "", [ "$bb" ] ],
-    [ "btn2:2.r", "bb1:18b.g", "", [ "$bb" ] ]
+    [ "btn2:2.r", "bb1:18b.g", "", [ "$bb" ] ],
+[ "esp:32", "co2Pot:SIG", "green", [ "h0" ] ],
+[ "co2Pot:GND", "bb1:bp.5", "black", [ "v0" ] ],
+[ "co2Pot:VCC", "bb1:bn.5", "red", [ "v0" ] ]
+
   ],
   "dependencies": {}
 }

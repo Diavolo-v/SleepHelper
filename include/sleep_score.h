@@ -11,11 +11,11 @@ public:
     int calculateSleepDuration(float time);
     int calculateSleepSchedule();
     int calculateLightExposure(float averageLight);
-    int calculateNoiseExposure();
+    int calculateNoiseExposure(float averageNoise);
     int calculateTemperature(float averageTemp);
     int calculateHumidity(float averageHumidity);
     int calculatePhoneUsageBeforeBed();
-    int calculateCarbonDioxide();
+    int calculateCarbonDioxide(float averageCO2);
     int phoneLeftonDevice();
     int userOpinionOnSleep();
     int calculateTotalScore(const Summary &summary);

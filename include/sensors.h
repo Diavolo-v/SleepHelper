@@ -6,8 +6,8 @@ struct SensorData
     float temperature;
     float humidity;
     int light;
-    // float noise;
-    // float co2;
+    int noise;
+    int co2;
 };
 struct Measurement
 {
@@ -20,5 +20,11 @@ struct Measurement
 
     bool hasLight;
     int light;
+
+    bool hasCO2;
+    int CO2;
+
+    bool hasNoise;
+    int noise;
 };
 #endif

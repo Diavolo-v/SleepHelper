@@ -19,10 +19,14 @@ struct Summary
     float averageTemp;
     float averageHum;
     float averageLight;
+    float averageCO2;
+    float averageNoise;
 
     bool hasTemperature;
     bool hasHumidity;
     bool hasLight;
+    bool hasCO2;
+    bool hasNoise;
 };
 
 class SleepSession
@@ -43,8 +47,8 @@ private:
 
     const unsigned long environmentalInterval = 10000;
     const unsigned long lightInterval = 3000;
-    const unsigned long noiseInterval = 5UL * 60UL * 1000UL;
-    const unsigned long co2Interval = 5UL * 60UL * 1000UL;
+    const unsigned long noiseInterval = 3000;
+    const unsigned long co2Interval = 3000;
 
 public:
     SleepSession();
@@ -57,6 +61,8 @@ public:
     float getAverageTemperature();
     float getAverageHumidity();
     float getAverageLight();
+    float getAverageCO2();
+    float getAverageNoise();
     int getSleepDurationSeconds();
     float getTotalSleepDuration();
     void calculateSummary();

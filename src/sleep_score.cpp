@@ -66,6 +66,53 @@ int SleepScore::calculateHumidity(float averageHumidity)
     }
     return 1;
 }
+// int SleepScore::calculateLightExposure(float averageLight)
+// {
+// }
+int SleepScore::calculateCarbonDioxide(float averageCO2)
+{
+    if (averageCO2 <= 800)
+    {
+        return 8;
+    }
+    if (averageCO2 <= 1000)
+    {
+        return 6;
+    }
+    if (averageCO2 <= 1200)
+    {
+        return 4;
+    }
+    if (averageCO2 <= 1500)
+    {
+        return 2;
+    }
+    return 0;
+}
+int SleepScore::calculateNoiseExposure(float averageNoise)
+{
+    if (averageNoise <= 30)
+    {
+        return 12;
+    }
+    if (averageNoise <= 35)
+    {
+        return 10;
+    }
+    if (averageNoise <= 40)
+    {
+        return 8;
+    }
+    if (averageNoise <= 45)
+    {
+        return 5;
+    }
+    if (averageNoise <= 50)
+    {
+        return 2;
+    }
+    return 0;
+}
 
 int SleepScore::calculateTotalScore(const Summary &summary)
 {
@@ -79,10 +126,18 @@ int SleepScore::calculateTotalScore(const Summary &summary)
     {
         total += calculateHumidity(summary.averageHum);
     }
-    // if (summary.hasLight)
-    // {
-    //     total += calculateLightExposure(summary.averageLight);
-    // }
+    if (summary.hasLight)
+    {
+        // total += calculateLightExposure(summary.averageLight);
+    }
+    if (summary.hasCO2)
+    {
+        total += calculateCarbonDioxide(summary.averageCO2);
+    }
+    if (summary.hasNoise)
+    {
+        total += calculateNoiseExposure(summary.averageNoise);
+    }
 
     score = total;
     return total;

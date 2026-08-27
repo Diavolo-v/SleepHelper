@@ -4,6 +4,8 @@
 int tempCount = 0;
 int humCount = 0;
 int lightCount = 0;
+int co2Count = 0;
+int noiseCount = 0;
 SleepSession::SleepSession()
 {
     state = IDLE;
@@ -48,6 +50,8 @@ void SleepSession::update(const SensorData &data)
     unsigned long currentTime = millis();
     bool updateEnvironment = false;
     bool updateLight = false;
+    bool updateNoise = false;
+    bool updateCO2 = false;
     hasNewMeasurement = false;
 
     if (currentTime - lastEnvironmentMeasurement > environmentalInterval)
@@ -61,8 +65,21 @@ void SleepSession::update(const SensorData &data)
         updateLight = true;
         lastLightMeasurement = currentTime;
     }
+    if (currentTime - lastCo2Measurement > co2Interval)
+    {
+        updateCO2 = true;
+        lastCo2Measurement = currentTime;
+    }
+    if (currentTime - lastNoiseMeasurement > noiseInterval)
+    {
+        updateNoise = true;
+        lastNoiseMeasurement = currentTime;
+    }
 
-    if (updateEnvironment || updateLight)
+    if (updateEnvironment ||
+        updateLight ||
+        updateCO2 ||
+        updateNoise)
     {
         if (measurementCount < MAX_MEASUREMENTS)
         {
@@ -71,6 +88,8 @@ void SleepSession::update(const SensorData &data)
             measurement.hasTemperature = updateEnvironment;
             measurement.hasHumidity = updateEnvironment;
             measurement.hasLight = updateLight;
+            measurement.hasCO2 = updateCO2;
+            measurement.hasNoise = updateNoise;
 
             if (updateEnvironment)
             {
@@ -81,18 +100,19 @@ void SleepSession::update(const SensorData &data)
             {
                 measurement.light = data.light;
             }
+            if (updateCO2)
+            {
+                measurement.CO2 = data.co2;
+            }
+            if (updateNoise)
+            {
+                measurement.noise = data.noise;
+            }
+
             measurementCount++;
             hasNewMeasurement = true;
         }
     }
-    // if (currentTime - lastNoiseMeasurement > noiseInterval)
-    // {
-    //     lastNoiseMeasurement = currentTime;
-    // }
-    // if (currentTime - lastCo2Measurement > co2Interval)
-    // {
-    //     lastCo2Measurement = currentTime;
-    // }
 }
 bool SleepSession::newMeasurement()
 {
@@ -137,6 +157,22 @@ void SleepSession::printMeasurements()
     if (measurements[lastMeasuredIndex].hasLight)
     {
         Serial.println(measurements[lastMeasuredIndex].light);
+    }
+    else
+    {
+        Serial.println("N/A");
+    }
+    if (measurements[lastMeasuredIndex].hasCO2)
+    {
+        Serial.println(measurements[lastMeasuredIndex].CO2);
+    }
+    else
+    {
+        Serial.println("N/A");
+    }
+    if (measurements[lastMeasuredIndex].hasNoise)
+    {
+        Serial.println(measurements[lastMeasuredIndex].noise);
     }
     else
     {
@@ -205,6 +241,43 @@ float SleepSession::getAverageLight()
 
     return averageLight;
 }
+float SleepSession::getAverageCO2()
+{
+    float sumOfCo2 = 0;
+    float averageCO2 = 0;
+    for (int i = 0; i < measurementCount; i++)
+    {
+        if (measurements[i].hasCO2)
+        {
+            sumOfCo2 += measurements[i].CO2;
+            co2Count++;
+        }
+    }
+    if (co2Count > 0)
+    {
+        averageCO2 = sumOfCo2 / co2Count;
+    }
+    return averageCO2;
+}
+float SleepSession::getAverageNoise()
+{
+    float sumOfNoise = 0;
+    float averageNoise = 0;
+
+    for (int i = 0; i < measurementCount; i++)
+    {
+        if (measurements[i].hasNoise)
+        {
+            sumOfNoise += measurements[i].noise;
+            noiseCount++;
+        }
+    }
+    if (noiseCount > 0)
+    {
+        averageNoise = sumOfNoise / noiseCount;
+    }
+    return averageNoise;
+}
 int SleepSession::getSleepDurationSeconds()
 {
     int startSeconds = startTime.hours * 3600 + startTime.minutes * 60 + startTime.seconds;
@@ -235,10 +308,14 @@ void SleepSession::calculateSummary()
     summary.averageTemp = getAverageTemperature();
     summary.averageHum = getAverageHumidity();
     summary.averageLight = getAverageLight();
+    summary.averageCO2 = getAverageCO2();
+    summary.averageNoise = getAverageNoise();
 
     summary.hasTemperature = tempCount > 0;
     summary.hasHumidity = humCount > 0;
     summary.hasLight = lightCount > 0;
+    summary.hasCO2 = co2Count > 0;
+    summary.hasNoise = noiseCount > 0;
 }
 Summary SleepSession::getSummary()
 {
