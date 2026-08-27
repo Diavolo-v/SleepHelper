@@ -67,13 +67,23 @@ int SleepScore::calculateHumidity(float averageHumidity)
     return 1;
 }
 
-int SleepScore::calculateTotalScore(float sleepDuration, int avgTemp, int avgHum)
+int SleepScore::calculateTotalScore(const Summary &summary)
 {
     int total = 0;
+    total += calculateSleepDuration(summary.durationHours);
+    if (summary.hasTemperature)
+    {
+        total += calculateTemperature(summary.averageTemp);
+    }
+    if (summary.hasHumidity)
+    {
+        total += calculateHumidity(summary.averageHum);
+    }
+    // if (summary.hasLight)
+    // {
+    //     total += calculateLightExposure(summary.averageLight);
+    // }
 
-    total += calculateSleepDuration(sleepDuration);
-    total += calculateTemperature(avgTemp);
-    total += calculateHumidity(avgHum);
     score = total;
     return total;
 }

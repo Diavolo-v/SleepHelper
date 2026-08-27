@@ -98,14 +98,38 @@ void DisplayManager::drawStatistics(const Summary &summary, int score)
     display->setCursor(20, 0);
     display->print("SLEEP STATISTICS");
     display->setCursor(5, 14);
-    display->print(summary.averageTemp, 1);
-    display->println(" C");
+    if (summary.hasTemperature)
+    {
+        display->print(summary.averageTemp, 1);
+        display->println(" C");
+    }
+    else
+    {
+        display->println("N/A");
+    }
+
     display->setCursor(5, 25);
-    display->print(summary.averageHum, 1);
-    display->println(" %");
+    if (summary.hasHumidity)
+    {
+        display->print(summary.averageHum, 1);
+        display->println(" %");
+    }
+    else
+    {
+        display->println("N/A");
+    }
+
     display->setCursor(5, 36);
-    display->print(summary.averageLight, 0);
-    display->println(" LUX");
+    if (summary.hasLight)
+    {
+        display->print(summary.averageLight, 0);
+        display->println(" LUX");
+    }
+    else
+    {
+        display->println("N/A");
+    }
+
     display->setCursor(5, 51);
     display->print("Today's sleep score: ");
     display->print(score);

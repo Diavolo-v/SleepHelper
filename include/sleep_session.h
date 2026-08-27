@@ -19,6 +19,10 @@ struct Summary
     float averageTemp;
     float averageHum;
     float averageLight;
+
+    bool hasTemperature;
+    bool hasHumidity;
+    bool hasLight;
 };
 
 class SleepSession

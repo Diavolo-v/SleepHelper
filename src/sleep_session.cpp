@@ -1,5 +1,9 @@
 #include "sleep_session.h"
 #include <Arduino.h>
+
+int tempCount = 0;
+int humCount = 0;
+int lightCount = 0;
 SleepSession::SleepSession()
 {
     state = IDLE;
@@ -7,6 +11,7 @@ SleepSession::SleepSession()
 
 void SleepSession::start(int hours, int minutes, int seconds)
 {
+
     measurementCount = 0;
     summary = {};
 
@@ -142,7 +147,6 @@ void SleepSession::printMeasurements()
 
 float SleepSession::getAverageTemperature()
 {
-    int recordCount = 0;
     float sumOfTemp = 0;
     float averageTemp = 0;
     for (int i = 0; i < measurementCount; i++)
@@ -150,16 +154,19 @@ float SleepSession::getAverageTemperature()
         if (measurements[i].hasTemperature)
         {
             sumOfTemp += measurements[i].temperature;
-            recordCount++;
+            tempCount++;
         }
     }
-    averageTemp = sumOfTemp / recordCount;
+    if (tempCount > 0)
+    {
+        averageTemp = sumOfTemp / tempCount;
+    }
+
     return averageTemp;
 }
 
 float SleepSession::getAverageHumidity()
 {
-    int recordCount = 0;
     float sumOfHumidity = 0;
     float averageHumidity = 0;
 
@@ -168,15 +175,18 @@ float SleepSession::getAverageHumidity()
         if (measurements[i].hasHumidity)
         {
             sumOfHumidity += measurements[i].humidity;
-            recordCount++;
+            humCount++;
         }
     }
-    averageHumidity = sumOfHumidity / recordCount;
+    if (humCount > 0)
+    {
+        averageHumidity = sumOfHumidity / humCount;
+    }
+
     return averageHumidity;
 }
 float SleepSession::getAverageLight()
 {
-    int recordCount = 0;
     float sumOfLight = 0;
     float averageLight = 0;
 
@@ -185,10 +195,14 @@ float SleepSession::getAverageLight()
         if (measurements[i].hasLight)
         {
             sumOfLight += measurements[i].light;
-            recordCount++;
+            lightCount++;
         }
     }
-    averageLight = sumOfLight / recordCount;
+    if (lightCount > 0)
+    {
+        averageLight = sumOfLight / lightCount;
+    }
+
     return averageLight;
 }
 int SleepSession::getSleepDurationSeconds()
@@ -211,10 +225,20 @@ float SleepSession::getTotalSleepDuration()
 
 void SleepSession::calculateSummary()
 {
+    if (measurementCount == 0)
+    {
+        summary = {};
+        return;
+    }
+
     summary.durationHours = getTotalSleepDuration();
     summary.averageTemp = getAverageTemperature();
     summary.averageHum = getAverageHumidity();
     summary.averageLight = getAverageLight();
+
+    summary.hasTemperature = tempCount > 0;
+    summary.hasHumidity = humCount > 0;
+    summary.hasLight = lightCount > 0;
 }
 Summary SleepSession::getSummary()
 {

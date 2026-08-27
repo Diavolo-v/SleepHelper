@@ -118,7 +118,7 @@ void updateSelectButton()
           {
             sleepsession.end(myClock.getHours(), myClock.getMinutes(), myClock.getSeconds());
             summary = sleepsession.getSummary();
-            sleepscore.calculateTotalScore(summary.durationHours, summary.averageTemp, summary.averageHum);
+            sleepscore.calculateTotalScore(summary);
             Serial.println("sleep session ended");
           }
           uistate = MENU;

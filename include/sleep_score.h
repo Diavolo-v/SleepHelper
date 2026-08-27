@@ -1,6 +1,6 @@
 #ifndef SLEEP_SCORE
 #define SLEEP_SCORE
-
+#include "sleep_session.h"
 class SleepScore
 {
 private:
@@ -18,7 +18,7 @@ public:
     int calculateCarbonDioxide();
     int phoneLeftonDevice();
     int userOpinionOnSleep();
-    int calculateTotalScore(float sleepDuration, int avgTemp, int avgHum);
+    int calculateTotalScore(const Summary &summary);
     int returnTotalScore();
 };
 
