@@ -4,7 +4,7 @@
 #include <Wire.h>
 #include "clock.h"
 extern Clock myClock;
-
+extern AlarmManager alarmClock;
 DisplayManager::DisplayManager(Adafruit_SSD1306 *display)
 {
     this->display = display;
@@ -83,11 +83,12 @@ void DisplayManager::drawNightMode(int hours, int minutes, int seconds)
     display->display();
 }
 
-void DisplayManager::drawAlarm()
+void DisplayManager::drawAlarm(int selectedAlarmOption)
 {
     display->setTextSize(2);
-    display->setCursor(28, 30);
+    display->setCursor(28, 10);
     display->print("ALARM");
+    drawAlarmSettings(selectedAlarmOption);
     display->display();
 }
 
@@ -202,5 +203,52 @@ void DisplayManager::drawMenu(int selectedScreen)
     else
         display->print(" SETTINGS");
 
+    display->display();
+}
+void DisplayManager::drawAlarmSettings(int selectedAlarmOption)
+{
+    display->setTextSize(1);
+    display->setCursor(45, 25);
+    if (selectedAlarmOption == 0)
+    {
+        display->print("> SET ALARM");
+    }
+    else
+    {
+        display->print("  SET ALARM");
+    }
+    if (selectedAlarmOption == 1)
+    {
+        if (alarmClock.isEnabled())
+        {
+            display->setCursor(45, 35);
+            display->print("> DISABLE ALARM");
+        }
+    }
+    else
+    {
+        if (alarmClock.isEnabled())
+        {
+            display->setCursor(45, 35);
+            display->print("  DISABLE ALARM");
+        }
+    }
+    display->display();
+}
+void DisplayManager::drawAlarmSetup(int hour, int minute, AlarmSetupState setupstate)
+{
+    display->setTextSize(2);
+    display->setCursor(35, 20);
+    if (hour < 10)
+    {
+        display->print("0");
+    }
+    display->print(hour);
+    display->print(":");
+    if (minute < 10)
+    {
+        display->print("0");
+    }
+    display->print(minute);
     display->display();
 }

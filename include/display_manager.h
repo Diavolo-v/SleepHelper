@@ -2,6 +2,7 @@
 #define DISPLAY_MANAGER
 #include <Adafruit_SSD1306.h>
 #include "sleep_session.h"
+#include "alarm_manager.h"
 class DisplayManager
 {
 private:
@@ -21,8 +22,10 @@ public:
 
     void drawNightMode(int hours, int minutes, int seconds);
     void drawStatistics(const Summary &summary, int score);
-    void drawAlarm();
+    void drawAlarm(int selectedAlarmOption);
     void drawSettings();
+    void drawAlarmSettings(int selectedAlarmOption);
+    void drawAlarmSetup(int hour, int minute, AlarmSetupState setupstate);
 
     //
     void tempAndHumidity(float temperature, float humdity);
