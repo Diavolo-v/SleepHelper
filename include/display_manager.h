@@ -17,10 +17,12 @@ public:
         int light,
         int hours,
         int minutes,
-        int seconds);
+        int seconds,
+        AlarmManager alarm);
     void drawMenu(int selectedScreen);
+    void drawAlarmSetInfo(AlarmManager alarm);
 
-    void drawNightMode(int hours, int minutes, int seconds);
+    void drawNightMode(int hours, int minutes, int seconds, AlarmManager alarm);
     void drawStatistics(const Summary &summary, int score);
     void drawAlarm(int selectedAlarmOption);
     void drawSettings();

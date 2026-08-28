@@ -66,27 +66,51 @@ void DisplayManager::tempAndHumidity(float temperature, float humidity)
     display->println(" %");
 }
 
-void DisplayManager::drawHomeScreen(float temperature, float humidity, int light, int hours, int minutes, int seconds)
+void DisplayManager::drawHomeScreen(float temperature, float humidity, int light, int hours, int minutes, int seconds, AlarmManager alarm)
 {
     drawClock(hours, minutes, seconds);
     tempAndHumidity(temperature, humidity);
     timeOfDay(light);
+    drawAlarmSetInfo(alarm);
     display->display();
 }
+void DisplayManager::drawAlarmSetInfo(AlarmManager alarm)
+{
+    if (alarm.isEnabled())
+    {
+        display->setTextSize(1);
+        display->setCursor(80, 54);
+        display->print("AL ");
+        if (alarm.getHour() < 10)
+        {
+            display->print("0");
+        }
 
-void DisplayManager::drawNightMode(int hours, int minutes, int seconds)
+        display->print(alarm.getHour());
+        display->print(":");
+        if (alarm.getMinutes() < 10)
+        {
+            display->print("0");
+        }
+
+        display->print(alarm.getMinutes());
+    }
+}
+
+void DisplayManager::drawNightMode(int hours, int minutes, int seconds, AlarmManager alarm)
 {
     drawClock(hours, minutes, seconds);
     display->setTextSize(1);
     display->setCursor(48, 54);
     display->print("NIGHT MODE");
+    drawAlarmSetInfo(alarm);
     display->display();
 }
 
 void DisplayManager::drawAlarm(int selectedAlarmOption)
 {
     display->setTextSize(2);
-    display->setCursor(28, 10);
+    display->setCursor(32, 2);
     display->print("ALARM");
     drawAlarmSettings(selectedAlarmOption);
     display->display();
@@ -208,7 +232,7 @@ void DisplayManager::drawMenu(int selectedScreen)
 void DisplayManager::drawAlarmSettings(int selectedAlarmOption)
 {
     display->setTextSize(1);
-    display->setCursor(45, 25);
+    display->setCursor(10, 25);
     if (selectedAlarmOption == 0)
     {
         display->print("> SET ALARM");
@@ -221,7 +245,7 @@ void DisplayManager::drawAlarmSettings(int selectedAlarmOption)
     {
         if (alarmClock.isEnabled())
         {
-            display->setCursor(45, 35);
+            display->setCursor(10, 35);
             display->print("> DISABLE ALARM");
         }
     }
@@ -229,9 +253,20 @@ void DisplayManager::drawAlarmSettings(int selectedAlarmOption)
     {
         if (alarmClock.isEnabled())
         {
-            display->setCursor(45, 35);
+            display->setCursor(10, 35);
             display->print("  DISABLE ALARM");
         }
+    }
+
+    display->setCursor(10, 45);
+
+    if (selectedAlarmOption == 2)
+    {
+        display->print("> BACK");
+    }
+    else
+    {
+        display->print("  BACK");
     }
     display->display();
 }
@@ -250,5 +285,27 @@ void DisplayManager::drawAlarmSetup(int hour, int minute, AlarmSetupState setups
         display->print("0");
     }
     display->print(minute);
+
+    if (setupstate == SET_HOUR)
+    {
+        display->setCursor(40, 42);
+        display->print("^");
+    }
+    else if (setupstate == SET_MINUTE)
+    {
+        display->setCursor(75, 42);
+        display->print("^");
+    }
+    display->setCursor(38, 55);
+    display->setTextSize(1);
+    if (setupstate == CONFIRM)
+    {
+        display->print("> DONE");
+    }
+    else
+    {
+        display->print("  DONE");
+    }
+
     display->display();
 }

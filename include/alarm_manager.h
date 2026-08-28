@@ -14,9 +14,12 @@ private:
     int alarmMinute;
     bool enabled;
     bool triggered;
+    int buzzer;
+    int lastTrigegredMinute = -1;
+    int lastTriggeredHour = -1;
 
 public:
-    AlarmManager();
+    AlarmManager(int pin);
     void setAlarm(int hour, int minutes);
     void disableAlarm();
     void update(int currentHour, int currentMinute);
@@ -25,6 +28,10 @@ public:
     bool isEnabled();
     bool isTrigered();
     void displayAlarmSettings();
+    int getHour();
+    int getMinutes();
+
+    void stopRinging();
 };
 
 #endif

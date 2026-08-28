@@ -63,13 +63,16 @@
       "rotate": 90,
       "attrs": { "color": "green", "xray": "1" }
     },
-{
-  "type": "wokwi-potentiometer",
-  "id": "co2Pot",
-  "top": -183.7,
-  "left": 100,
-  "attrs": {}
-}
+    { "type": "wokwi-potentiometer", "id": "co2Pot", "top": -183.7, "left": 100, "attrs": {} },
+    { "type": "wokwi-buzzer", "id": "buzzer1", "top": -64.8, "left": 222.6, "attrs": {} },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn3",
+      "top": -355.3,
+      "left": 185.9,
+      "rotate": 90,
+      "attrs": { "color": "yellow", "xray": "1" }
+    }
   ],
   "connections": [
     [ "esp:TX", "$serialMonitor:RX", "", [] ],
@@ -98,12 +101,17 @@
     [ "ldr1:VCC", "bb1:bn.4", "red", [ "h28.8", "v48", "h163.2" ] ],
     [ "ldr1:GND", "bb1:bp.4", "black", [ "h19.2", "v-10", "h153.6" ] ],
     [ "ldr1:AO", "esp:35", "green", [ "h9.6", "v28.1", "h-76.8", "v153.6" ] ],
+    [ "bb1:18b.i", "bb1:bp.15", "black", [ "v0" ] ],
+    [ "esp:5", "bb1:20b.i", "white", [ "h0" ] ],
+    [ "esp:32", "co2Pot:SIG", "green", [ "h0" ] ],
+    [ "co2Pot:GND", "bb1:bp.5", "black", [ "v0" ] ],
+    [ "co2Pot:VCC", "bb1:bn.5", "red", [ "v0" ] ],
+    [ "buzzer1:1", "esp:25", "green", [ "v0" ] ],
+    [ "buzzer1:2", "bb1:bp.16", "black", [ "v0" ] ],
     [ "led1:A", "bb1:5b.g", "", [ "$bb" ] ],
     [ "led1:C", "bb1:4b.g", "", [ "$bb" ] ],
     [ "r1:1", "bb1:5b.h", "", [ "$bb" ] ],
     [ "r1:2", "bb1:11b.h", "", [ "$bb" ] ],
-    [ "bb1:18b.i", "bb1:bp.15", "black", [ "v0" ] ],
-    [ "esp:5", "bb1:20b.i", "white", [ "h0" ] ],
     [ "btn1:1.l", "bb1:15t.b", "", [ "$bb" ] ],
     [ "btn1:2.l", "bb1:13t.b", "", [ "$bb" ] ],
     [ "btn1:1.r", "bb1:15b.g", "", [ "$bb" ] ],
@@ -112,10 +120,12 @@
     [ "btn2:2.l", "bb1:18t.b", "", [ "$bb" ] ],
     [ "btn2:1.r", "bb1:20b.g", "", [ "$bb" ] ],
     [ "btn2:2.r", "bb1:18b.g", "", [ "$bb" ] ],
-[ "esp:32", "co2Pot:SIG", "green", [ "h0" ] ],
-[ "co2Pot:GND", "bb1:bp.5", "black", [ "v0" ] ],
-[ "co2Pot:VCC", "bb1:bn.5", "red", [ "v0" ] ]
-
+    [ "btn3:1.l", "bb1:25t.b", "", [ "$bb" ] ],
+    [ "btn3:2.l", "bb1:23t.b", "", [ "$bb" ] ],
+    [ "btn3:1.r", "bb1:25b.g", "", [ "$bb" ] ],
+    [ "btn3:2.r", "bb1:23b.g", "", [ "$bb" ] ],
+    [ "bb1:23b.h", "bb1:bp.19", "green", [ "v0" ] ],
+    [ "bb1:25b.i", "esp:15", "magenta", [ "v0" ] ]
   ],
   "dependencies": {}
 }

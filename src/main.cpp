@@ -12,7 +12,8 @@
 #define POT_PIN 34
 #define NEXT_BUTTON_PIN 4
 #define SELECT_BUTTON 5
-
+#define ALARM_BUTTON 15
+#define ALARM_BUZZER_PIN 25
 bool lastNextReading = HIGH;
 bool nextButtonState = HIGH;
 
@@ -28,7 +29,7 @@ Adafruit_SSD1306 display(128, 64, &Wire, -1);
 SensorManager sensors;
 Summary summary;
 SleepScore sleepscore;
-AlarmManager alarmClock;
+AlarmManager alarmClock(ALARM_BUZZER_PIN);
 AlarmSetupState alarmsetupstate = SET_HOUR;
 DisplayManager displayManager(&display);
 
@@ -52,7 +53,8 @@ enum Screen
 enum AlarmOption
 {
   SET,
-  DISABLE
+  DISABLE,
+  BACK
 };
 int selectedScreen = 0;
 int selectedAlarmOption = 0;
@@ -60,9 +62,16 @@ SleepSession sleepsession;
 Screen currentScreen = HOME;
 AlarmOption alarmoption = SET;
 Clock myClock(18, 10, 0);
-int hour = 7;
+int hour = 0;
 int minutes = 0;
 
+void updateAlarmButton()
+{
+  if (digitalRead(ALARM_BUTTON) == LOW)
+  {
+    alarmClock.stopRinging();
+  }
+}
 void updateNextButton()
 {
 
@@ -93,10 +102,25 @@ void updateNextButton()
         }
         else if (uistate == SCREEN_VIEW && currentScreen == ALARM)
         {
-          selectedAlarmOption++;
-          if (selectedAlarmOption > 1)
+
+          if (alarmClock.isEnabled())
           {
-            selectedAlarmOption = 0;
+            selectedAlarmOption++;
+            if (selectedAlarmOption > BACK)
+            {
+              selectedAlarmOption = SET;
+            }
+          }
+          else
+          {
+            if (selectedAlarmOption == SET)
+            {
+              selectedAlarmOption = BACK;
+            }
+            else
+            {
+              selectedAlarmOption = SET;
+            }
           }
         }
         else if (uistate == ALARM_SETUP)
@@ -164,11 +188,28 @@ void updateSelectButton()
           {
             if (selectedAlarmOption == SET)
             {
+              if (alarmClock.isEnabled())
+              {
+                hour = alarmClock.getHour();
+                minutes = alarmClock.getMinutes();
+              }
+              else
+              {
+                hour = 7;
+                minutes = 15;
+              }
+
+              alarmsetupstate = SET_HOUR;
               uistate = ALARM_SETUP;
             }
             else if (selectedAlarmOption == DISABLE)
             {
               alarmClock.disableAlarm();
+              selectedAlarmOption = SET;
+              uistate = MENU;
+            }
+            else if (selectedAlarmOption == BACK)
+            {
               uistate = MENU;
             }
           }
@@ -181,8 +222,6 @@ void updateSelectButton()
         {
           if (alarmsetupstate == SET_HOUR)
           {
-            hour = myClock.getHours();
-            minutes = myClock.getMinutes() + 5;
             alarmsetupstate = SET_MINUTE;
           }
           else if (alarmsetupstate == SET_MINUTE)
@@ -209,6 +248,7 @@ void setup()
   Serial.begin(9600);
   pinMode(NEXT_BUTTON_PIN, INPUT_PULLUP);
   pinMode(SELECT_BUTTON, INPUT_PULLUP);
+  pinMode(ALARM_BUTTON, INPUT_PULLUP);
   if (!display.begin(SSD1306_SWITCHCAPVCC, 0x3C))
   {
     Serial.println("Oled not found");
@@ -228,7 +268,6 @@ void loop()
   sensors.update();
   SensorData data = sensors.getCurrentData();
   sleepsession.update(data);
-  // alarmClock.setAlarm(18, 12);
   alarmClock.update(myClock.getHours(), myClock.getMinutes());
   if (alarmClock.isTrigered())
   {
@@ -239,7 +278,7 @@ void loop()
   {
     sleepsession.printMeasurements();
   }
-
+  updateAlarmButton();
   updateNextButton();
   updateSelectButton();
   display.clearDisplay();
@@ -253,10 +292,10 @@ void loop()
     switch (currentScreen)
     {
     case HOME:
-      displayManager.drawHomeScreen(data.temperature, data.humidity, data.light, myClock.getHours(), myClock.getMinutes(), myClock.getSeconds());
+      displayManager.drawHomeScreen(data.temperature, data.humidity, data.light, myClock.getHours(), myClock.getMinutes(), myClock.getSeconds(), alarmClock);
       break;
     case NIGHT_MODE:
-      displayManager.drawNightMode(myClock.getHours(), myClock.getMinutes(), myClock.getSeconds());
+      displayManager.drawNightMode(myClock.getHours(), myClock.getMinutes(), myClock.getSeconds(), alarmClock);
       break;
     case STATISTICS:
       displayManager.drawStatistics(summary, sleepscore.returnTotalScore());
