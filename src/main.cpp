@@ -7,11 +7,13 @@
 #include "sensor_manager.h"
 #include "sleep_session.h"
 #include "sleep_score.h"
+#include "alarm_manager.h"
 #define LED_PIN 2
 #define POT_PIN 34
 #define NEXT_BUTTON_PIN 4
 #define SELECT_BUTTON 5
-
+#define ALARM_BUTTON 15
+#define ALARM_BUZZER_PIN 25
 bool lastNextReading = HIGH;
 bool nextButtonState = HIGH;
 
@@ -27,12 +29,15 @@ Adafruit_SSD1306 display(128, 64, &Wire, -1);
 SensorManager sensors;
 Summary summary;
 SleepScore sleepscore;
+AlarmManager alarmClock(ALARM_BUZZER_PIN);
+AlarmSetupState alarmsetupstate = SET_HOUR;
 DisplayManager displayManager(&display);
 
 enum UIState
 {
   MENU,
-  SCREEN_VIEW
+  SCREEN_VIEW,
+  ALARM_SETUP
 };
 
 UIState uistate = MENU;
@@ -45,12 +50,28 @@ enum Screen
   ALARM,
   SETTINGS
 };
+enum AlarmOption
+{
+  SET,
+  DISABLE,
+  BACK
+};
 int selectedScreen = 0;
+int selectedAlarmOption = 0;
 SleepSession sleepsession;
 Screen currentScreen = HOME;
-
+AlarmOption alarmoption = SET;
 Clock myClock(18, 10, 0);
+int hour = 0;
+int minutes = 0;
 
+void updateAlarmButton()
+{
+  if (digitalRead(ALARM_BUTTON) == LOW)
+  {
+    alarmClock.stopRinging();
+  }
+}
 void updateNextButton()
 {
 
@@ -77,6 +98,48 @@ void updateNextButton()
           if (selectedScreen > 4)
           {
             selectedScreen = 0;
+          }
+        }
+        else if (uistate == SCREEN_VIEW && currentScreen == ALARM)
+        {
+
+          if (alarmClock.isEnabled())
+          {
+            selectedAlarmOption++;
+            if (selectedAlarmOption > BACK)
+            {
+              selectedAlarmOption = SET;
+            }
+          }
+          else
+          {
+            if (selectedAlarmOption == SET)
+            {
+              selectedAlarmOption = BACK;
+            }
+            else
+            {
+              selectedAlarmOption = SET;
+            }
+          }
+        }
+        else if (uistate == ALARM_SETUP)
+        {
+          if (alarmsetupstate == SET_HOUR)
+          {
+            hour++;
+            if (hour > 23)
+            {
+              hour = 0;
+            }
+          }
+          else if (alarmsetupstate == SET_MINUTE)
+          {
+            minutes = minutes + 5;
+            if (minutes > 59)
+            {
+              minutes = 0;
+            }
           }
         }
       }
@@ -121,7 +184,56 @@ void updateSelectButton()
             sleepscore.calculateTotalScore(summary);
             Serial.println("sleep session ended");
           }
-          uistate = MENU;
+          if (currentScreen == ALARM)
+          {
+            if (selectedAlarmOption == SET)
+            {
+              if (alarmClock.isEnabled())
+              {
+                hour = alarmClock.getHour();
+                minutes = alarmClock.getMinutes();
+              }
+              else
+              {
+                hour = 7;
+                minutes = 15;
+              }
+
+              alarmsetupstate = SET_HOUR;
+              uistate = ALARM_SETUP;
+            }
+            else if (selectedAlarmOption == DISABLE)
+            {
+              alarmClock.disableAlarm();
+              selectedAlarmOption = SET;
+              uistate = MENU;
+            }
+            else if (selectedAlarmOption == BACK)
+            {
+              uistate = MENU;
+            }
+          }
+          else
+          {
+            uistate = MENU;
+          }
+        }
+        else if (uistate == ALARM_SETUP)
+        {
+          if (alarmsetupstate == SET_HOUR)
+          {
+            alarmsetupstate = SET_MINUTE;
+          }
+          else if (alarmsetupstate == SET_MINUTE)
+          {
+            alarmsetupstate = CONFIRM;
+          }
+          else if (alarmsetupstate == CONFIRM)
+          {
+            alarmClock.setAlarm(hour, minutes);
+            uistate = MENU;
+            Serial.println("ALARM SAVED!.");
+          }
         }
       }
     }
@@ -136,6 +248,7 @@ void setup()
   Serial.begin(9600);
   pinMode(NEXT_BUTTON_PIN, INPUT_PULLUP);
   pinMode(SELECT_BUTTON, INPUT_PULLUP);
+  pinMode(ALARM_BUTTON, INPUT_PULLUP);
   if (!display.begin(SSD1306_SWITCHCAPVCC, 0x3C))
   {
     Serial.println("Oled not found");
@@ -155,11 +268,17 @@ void loop()
   sensors.update();
   SensorData data = sensors.getCurrentData();
   sleepsession.update(data);
+  alarmClock.update(myClock.getHours(), myClock.getMinutes());
+  if (alarmClock.isTrigered())
+  {
+    Serial.println("ALARM RINGS!!");
+  }
+
   if (sleepsession.newMeasurement())
   {
     sleepsession.printMeasurements();
   }
-
+  updateAlarmButton();
   updateNextButton();
   updateSelectButton();
   display.clearDisplay();
@@ -173,20 +292,24 @@ void loop()
     switch (currentScreen)
     {
     case HOME:
-      displayManager.drawHomeScreen(data.temperature, data.humidity, data.light, myClock.getHours(), myClock.getMinutes(), myClock.getSeconds());
+      displayManager.drawHomeScreen(data.temperature, data.humidity, data.light, myClock.getHours(), myClock.getMinutes(), myClock.getSeconds(), alarmClock);
       break;
     case NIGHT_MODE:
-      displayManager.drawNightMode(myClock.getHours(), myClock.getMinutes(), myClock.getSeconds());
+      displayManager.drawNightMode(myClock.getHours(), myClock.getMinutes(), myClock.getSeconds(), alarmClock);
       break;
     case STATISTICS:
       displayManager.drawStatistics(summary, sleepscore.returnTotalScore());
       break;
     case ALARM:
-      displayManager.drawAlarm();
+      displayManager.drawAlarm(selectedAlarmOption);
       break;
     case SETTINGS:
       displayManager.drawSettings();
       break;
     }
+  }
+  else if (uistate == ALARM_SETUP)
+  {
+    displayManager.drawAlarmSetup(hour, minutes, alarmsetupstate);
   }
 }
