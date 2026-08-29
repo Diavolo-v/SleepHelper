@@ -1,4 +1,5 @@
 #include "sleep_score.h"
+#include <Arduino.h>
 SleepScore::SleepScore()
 {
     score = 0;
@@ -116,30 +117,39 @@ int SleepScore::calculateNoiseExposure(float averageNoise)
 
 int SleepScore::calculateTotalScore(const Summary &summary)
 {
+
     int total = 0;
+
+    Serial.println(summary.durationHours);
+
     total += calculateSleepDuration(summary.durationHours);
+
     if (summary.hasTemperature)
     {
         total += calculateTemperature(summary.averageTemp);
     }
+
     if (summary.hasHumidity)
     {
         total += calculateHumidity(summary.averageHum);
     }
+
     if (summary.hasLight)
     {
-        // total += calculateLightExposure(summary.averageLight);
     }
+
     if (summary.hasCO2)
     {
         total += calculateCarbonDioxide(summary.averageCO2);
     }
+
     if (summary.hasNoise)
     {
         total += calculateNoiseExposure(summary.averageNoise);
     }
 
     score = total;
+
     return total;
 }
 
