@@ -67,6 +67,11 @@ int AlarmManager::getMinutes()
 }
 void AlarmManager::stopRinging()
 {
+    if (!triggered)
+    {
+        return;
+    }
+
     triggered = false;
     noTone(buzzer);
 }
