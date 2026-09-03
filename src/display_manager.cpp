@@ -182,11 +182,43 @@ void DisplayManager::drawStatistics(const Summary &summary, int score)
     display->display();
 }
 
-void DisplayManager::drawSettings()
+void DisplayManager::drawSettings(int selectedOption)
 {
-    display->setTextSize(2);
-    display->setCursor(28, 30);
-    display->print("Settings");
+    display->setTextSize(1);
+
+    display->setCursor(5, 0);
+    display->print("SETTINGS");
+
+    display->setCursor(10, 12);
+    if (selectedOption == 0)
+        display->print("> TIME");
+    else
+        display->print(" TIME");
+
+    display->setCursor(10, 22);
+    if (selectedOption == 1)
+        display->print("> TIME FORMAT");
+    else
+        display->print(" TIME FORMAT");
+
+    display->setCursor(10, 32);
+    if (selectedOption == 2)
+        display->print("> DISPLAY");
+    else
+        display->print(" DISPLAY");
+
+    display->setCursor(10, 42);
+    if (selectedOption == 3)
+        display->print("> SLEEP");
+    else
+        display->print(" SLEEP");
+
+    display->setCursor(10, 52);
+    if (selectedOption == 4)
+        display->print("> BACK");
+    else
+        display->print(" BACK");
+
     display->display();
 }
 
@@ -307,5 +339,57 @@ void DisplayManager::drawAlarmSetup(int hour, int minute, AlarmSetupState setups
         display->print("  DONE");
     }
 
+    display->display();
+}
+
+void DisplayManager::drawSetTime(int hour, int minute, TimeSetupState clockSetup)
+{
+    display->setTextSize(2);
+    display->setCursor(35, 20);
+    if (hour < 10)
+    {
+        display->print("0");
+    }
+    display->print(hour);
+    display->print(":");
+    if (minute < 10)
+    {
+        display->print("0");
+    }
+    display->print(minute);
+
+    if (clockSetup == SET_HOUR_CLOCK)
+    {
+        display->setCursor(40, 42);
+        display->print("^");
+    }
+    else if (clockSetup == SET_MINUTE_CLOCK)
+    {
+        display->setCursor(75, 42);
+        display->print("^");
+    }
+    display->setCursor(38, 55);
+    display->setTextSize(1);
+    if (clockSetup == CONFIRM_TIME)
+    {
+        display->print("> DONE");
+    }
+    else
+    {
+        display->print("  DONE");
+    }
+
+    display->display();
+}
+
+void DisplayManager::drawTimeFormat()
+{
+    display->setTextSize(1);
+    display->setCursor(10, 25);
+    display->print(" 24H FORMAT");
+    display->setCursor(10, 35);
+    display->print(" 12H FORMAT");
+    display->setCursor(10, 45);
+    display->print(" BACK");
     display->display();
 }

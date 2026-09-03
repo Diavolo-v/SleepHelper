@@ -16,4 +16,5 @@ public:
   int getHours();
   int getMinutes();
   int getSeconds();
+  void setTime(int hours, int minutes, int seconds);
 };
