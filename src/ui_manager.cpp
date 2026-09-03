@@ -25,6 +25,10 @@ void UIManager::handleSettingsNext()
 {
     settingsManager->handleNext();
 }
+void UIManager::handleDisplaySettingsNext()
+{
+    displayManager->handleDisplayNext();
+}
 void UIManager::handleAlarmMenuNext()
 {
     if (alarmClock->isEnabled())
@@ -67,6 +71,7 @@ void UIManager::handleClockSetupNext()
         }
     }
 }
+
 void UIManager::handleAlarmSetupNext()
 {
     if (alarmSetupState == SET_HOUR)
@@ -233,7 +238,27 @@ void UIManager::handleTimeFormatSelect()
     }
     else
     {
-        uistate = MENU;
+        settingsManager->setState(MENU_SETTINGS);
+    }
+}
+
+void UIManager::handleDisplayBrightnessSelect()
+{
+    if (displayManager->getBrightnessOption() == LOW_B)
+    {
+        displayManager->setBrightness(80);
+    }
+    else if (displayManager->getBrightnessOption() == MID_B)
+    {
+        displayManager->setBrightness(160);
+    }
+    else if (displayManager->getBrightnessOption() == HIGH_B)
+    {
+        displayManager->setBrightness(255);
+    }
+    else
+    {
+        settingsManager->setState(MENU_SETTINGS);
     }
 }
 
@@ -270,6 +295,10 @@ void UIManager::handleNextButton()
         {
             handleTimeFormatSetupNext();
         }
+        else if (settingsManager->getState() == DISPLAY_SETTINGS)
+        {
+            handleDisplaySettingsNext();
+        }
     }
     else if (uistate == ALARM_SETUP)
     {
@@ -297,6 +326,11 @@ void UIManager::handleSelectButton()
         {
             handleTimeFormatSelect();
         }
+        else if (settingsManager->getState() == DISPLAY_SETTINGS)
+        {
+            handleDisplayBrightnessSelect();
+        }
+
         else
         {
             handleSettingsSelect();
@@ -357,7 +391,7 @@ void UIManager::draw(SensorData *data)
             }
             else if (settingsManager->getState() == DISPLAY_SETTINGS)
             {
-                /* code */
+                displayManager->drawDisplaySettings(displayManager->getBrightnessOption());
             }
             else if (settingsManager->getState() == SLEEP_SETTINGS)
             {

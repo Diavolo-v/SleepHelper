@@ -472,3 +472,41 @@ void DisplayManager::drawTimeFor24HFormat(int hours, int minutes, int seconds)
     }
     display->print(minutes);
 }
+int DisplayManager::getBrightnessOption()
+{
+    return brightnessOptionCount;
+}
+void DisplayManager::setBrightness(int value)
+{
+    display->ssd1306_command(SSD1306_SETCONTRAST);
+    display->ssd1306_command(value);
+}
+void DisplayManager::handleDisplayNext()
+{
+    brightnessOptionCount++;
+    if (brightnessOptionCount > 3)
+    {
+        brightnessOptionCount = 0;
+    }
+}
+void DisplayManager::drawDisplaySettings(int brightnessOptionCount)
+{
+    display->setTextSize(1);
+
+    display->setCursor(38, 2);
+    display->print("BRIGHTNESS");
+
+    display->setCursor(32, 18);
+    display->print(brightnessOptionCount == 0 ? "> LOW" : "  LOW");
+
+    display->setCursor(32, 29);
+    display->print(brightnessOptionCount == 1 ? "> MID" : "  MID");
+
+    display->setCursor(32, 40);
+    display->print(brightnessOptionCount == 2 ? "> HIGH" : "  HIGH");
+
+    display->setCursor(32, 51);
+    display->print(brightnessOptionCount == 3 ? "> BACK" : "  BACK");
+
+    display->display();
+}

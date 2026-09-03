@@ -4,10 +4,18 @@
 #include "sleep_session.h"
 #include "alarm_manager.h"
 #include "settings_manager.h"
+enum BrightnessLevel
+{
+    LOW_B,
+    MID_B,
+    HIGH_B
+};
 class DisplayManager
 {
 private:
     Adafruit_SSD1306 *display;
+    BrightnessLevel brightness = HIGH_B;
+    int brightnessOptionCount = 0;
 
 public:
     DisplayManager(Adafruit_SSD1306 *display);
@@ -32,7 +40,7 @@ public:
 
     void drawSetTime(int hour, int minute, TimeSetupState clockSetup);
     void drawTimeFormat(int selectedFormatOption);
-    void drawDisplaySettings();
+    void drawDisplaySettings(int brightnessOptionCount);
     void drawSleepSettings();
 
     //
@@ -40,6 +48,11 @@ public:
     void timeOfDay(int light);
     void drawTimeFor24HFormat(int hours, int minutes, int seconds);
     void drawTimeFor12HFormat(int hours, int minutes, int seconds);
+
+    void setBrightness(int value);
+    int getBrightness();
+    int getBrightnessOption();
+    void handleDisplayNext();
 };
 
 #endif
