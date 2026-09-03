@@ -17,6 +17,14 @@ void SettingsManager::handleNext()
         selectedSettingOption = TIME_OPTION;
     }
 }
+void SettingsManager::handleTimeFormatNext()
+{
+    selectedTimeFormatOption++;
+    if (selectedTimeFormatOption > 2)
+    {
+        selectedTimeFormatOption = 0;
+    }
+}
 
 void SettingsManager::setState(SettingState settingState)
 {
@@ -29,4 +37,9 @@ TimeSetupState SettingsManager::getClockSettingState()
 void SettingsManager::setClockSettingState(TimeSetupState state)
 {
     this->clockSetup = state;
+}
+
+int SettingsManager::getTimeFormatOption()
+{
+    return selectedTimeFormatOption;
 }

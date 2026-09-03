@@ -67,3 +67,11 @@ void Clock::setTime(int hours, int minutes, int seconds)
 
   previousMillis = millis();
 }
+void Clock::setTimeFormat(TimeFormat timeFormat)
+{
+  this->timeFormat = timeFormat;
+}
+TimeFormat Clock::getTimeFormat()
+{
+  return timeFormat;
+}

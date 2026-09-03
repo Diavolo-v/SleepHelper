@@ -181,6 +181,10 @@ void UIManager::handleSettingsSelect()
         uistate = MENU;
     }
 }
+void UIManager::handleTimeFormatSetupNext()
+{
+    settingsManager->handleTimeFormatNext();
+}
 
 void UIManager::handleSettingClockSelect()
 {
@@ -215,6 +219,24 @@ void UIManager::handleAlarmSetupSelect()
         uistate = MENU;
     }
 }
+void UIManager::handleTimeFormatSelect()
+{
+    if (settingsManager->getTimeFormatOption() == 0)
+    {
+        clock->setTimeFormat(FORMAT_24H);
+        uistate = MENU;
+    }
+    else if (settingsManager->getTimeFormatOption() == 1)
+    {
+        clock->setTimeFormat(FORMAT_12H);
+        uistate = MENU;
+    }
+    else
+    {
+        uistate = MENU;
+    }
+}
+
 void UIManager::handleAlarmButton()
 {
     if (buttons->isAlarmPressedBtn())
@@ -244,6 +266,10 @@ void UIManager::handleNextButton()
         {
             handleClockSetupNext();
         }
+        else if (settingsManager->getState() == SET_TIME_FORMAT)
+        {
+            handleTimeFormatSetupNext();
+        }
     }
     else if (uistate == ALARM_SETUP)
     {
@@ -266,6 +292,10 @@ void UIManager::handleSelectButton()
         if (settingsManager->getState() == SET_TIME)
         {
             handleSettingClockSelect();
+        }
+        else if (settingsManager->getState() == SET_TIME_FORMAT)
+        {
+            handleTimeFormatSelect();
         }
         else
         {
@@ -323,7 +353,7 @@ void UIManager::draw(SensorData *data)
             }
             else if (settingsManager->getState() == SET_TIME_FORMAT)
             {
-                displayManager->drawTimeFormat();
+                displayManager->drawTimeFormat(settingsManager->getTimeFormatOption());
             }
             else if (settingsManager->getState() == DISPLAY_SETTINGS)
             {

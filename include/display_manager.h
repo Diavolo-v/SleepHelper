@@ -31,13 +31,15 @@ public:
     void drawAlarmSetup(int hour, int minute, AlarmSetupState setupstate);
 
     void drawSetTime(int hour, int minute, TimeSetupState clockSetup);
-    void drawTimeFormat();
+    void drawTimeFormat(int selectedFormatOption);
     void drawDisplaySettings();
     void drawSleepSettings();
 
     //
     void tempAndHumidity(float temperature, float humdity);
     void timeOfDay(int light);
+    void drawTimeFor24HFormat(int hours, int minutes, int seconds);
+    void drawTimeFor12HFormat(int hours, int minutes, int seconds);
 };
 
 #endif

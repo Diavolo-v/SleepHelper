@@ -71,6 +71,8 @@ private:
     void handleSettingsSelect();
     void handleSettingClockSelect();
     void handleClockSetupNext();
+    void handleTimeFormatSetupNext();
+    void handleTimeFormatSelect();
 
 public:
     UIManager(ButtonManager *buttons,

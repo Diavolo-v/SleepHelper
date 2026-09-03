@@ -1,6 +1,6 @@
 #ifndef SETTINGS_MANAGER_H
 #define SETTINGS_MANAGER_H
-
+#include "clock.h"
 enum SettingState
 {
     MENU_SETTINGS,
@@ -10,11 +10,7 @@ enum SettingState
     SLEEP_SETTINGS,
     BACK_SETTINGS
 };
-enum TimeFormat
-{
-    FORMAT_24H,
-    FORMAT_12H
-};
+
 enum SettingOption
 {
     TIME_OPTION,
@@ -35,6 +31,7 @@ private:
     SettingState state = MENU_SETTINGS;
     TimeSetupState clockSetup = SET_HOUR_CLOCK;
     int selectedSettingOption = TIME_OPTION;
+    int selectedTimeFormatOption = 0;
 
 public:
     void update();
@@ -45,6 +42,8 @@ public:
     void handleNext();
     void handleSelect();
     void setState(SettingState state);
+    int getTimeFormatOption();
+    void handleTimeFormatNext();
 };
 
 #endif
