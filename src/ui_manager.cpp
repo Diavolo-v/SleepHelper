@@ -277,12 +277,12 @@ void UIManager::handleTimeFormatSelect()
     if (settingsManager->getTimeFormatOption() == 0)
     {
         clock->setTimeFormat(FORMAT_24H);
-        uistate = MENU;
+        settingsManager->setState(MENU_SETTINGS);
     }
     else if (settingsManager->getTimeFormatOption() == 1)
     {
         clock->setTimeFormat(FORMAT_12H);
-        uistate = MENU;
+        settingsManager->setState(MENU_SETTINGS);
     }
     else
     {
