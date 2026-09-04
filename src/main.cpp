@@ -10,6 +10,7 @@
 #include "sleep_score.h"
 #include "alarm_manager.h"
 #include "ui_manager.h"
+#include "settings_manager.h"
 
 #define ALARM_BUZZER_PIN 25
 
@@ -20,9 +21,10 @@ AlarmManager alarmClock(ALARM_BUZZER_PIN);
 DisplayManager displayManager(&display);
 SleepSession sleepsession;
 ButtonManager buttons;
+SettingsManager settingsManager;
 Clock myClock(18, 10, 0);
 Summary summary;
-UIManager ui(&buttons, &myClock, &alarmClock, &sleepsession, &sleepscore, &displayManager, &summary);
+UIManager ui(&buttons, &myClock, &alarmClock, &sleepsession, &sleepscore, &displayManager, &settingsManager, &summary);
 
 //=======================SYSEM FUNC===========================
 

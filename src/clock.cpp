@@ -44,3 +44,34 @@ int Clock::getSeconds()
 {
   return seconds;
 }
+
+void Clock::setTime(int hours, int minutes, int seconds)
+{
+
+  if (hours < 0 || hours > 24)
+  {
+    return;
+  }
+  if (minutes < 0 || minutes > 59)
+  {
+    return;
+  }
+  if (seconds < 0 || seconds > 59)
+  {
+    return;
+  }
+
+  hour = hours;
+  this->minutes = minutes;
+  this->seconds = seconds;
+
+  previousMillis = millis();
+}
+void Clock::setTimeFormat(TimeFormat timeFormat)
+{
+  this->timeFormat = timeFormat;
+}
+TimeFormat Clock::getTimeFormat()
+{
+  return timeFormat;
+}

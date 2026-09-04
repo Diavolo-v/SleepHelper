@@ -1,6 +1,6 @@
 #include "ui_manager.h"
 
-UIManager::UIManager(ButtonManager *buttons, Clock *clock, AlarmManager *alarmClock, SleepSession *sleepSession, SleepScore *sleepScore, DisplayManager *displayManager, Summary *summary)
+UIManager::UIManager(ButtonManager *buttons, Clock *clock, AlarmManager *alarmClock, SleepSession *sleepSession, SleepScore *sleepScore, DisplayManager *displayManager, SettingsManager *settingsManager, Summary *summary)
 {
     this->buttons = buttons;
     this->clock = clock;
@@ -8,6 +8,7 @@ UIManager::UIManager(ButtonManager *buttons, Clock *clock, AlarmManager *alarmCl
     this->sleepSession = sleepSession;
     this->sleepScore = sleepScore;
     this->displayManager = displayManager;
+    this->settingsManager = settingsManager;
     this->summary = summary;
 }
 
@@ -19,7 +20,63 @@ void UIManager::handleMenuNext()
         selectedScreen = 0;
     }
 }
+void UIManager::handleSleepSettingsNext()
+{
+    settingsManager->handleSleepSettingNext();
+}
 
+void UIManager::handleSettingsNext()
+{
+    settingsManager->handleNext();
+}
+void UIManager::handleDisplaySettingsNext()
+{
+    displayManager->handleDisplayNext();
+}
+void UIManager::handleSleepGoalNext()
+{
+    settingsManager->handleSleepGoalOptionNext();
+}
+
+void UIManager::handleSleepSettingsSelect()
+{
+    if (settingsManager->getSelectedSleepOption() == 0)
+    {
+        settingsManager->setSleepSettingState(SLEEP_GOAL);
+    }
+    else
+    {
+        settingsManager->setState(MENU_SETTINGS);
+    }
+}
+
+void UIManager::handleSleepGoalselect()
+{
+    if (settingsManager->getSelectedSleepGoalOption() == H730)
+    {
+        settingsManager->setSelectedSleepGoal(450);
+        settingsManager->setSleepSettingState(SLEEP_SETTING_MENU);
+    }
+    else if (settingsManager->getSelectedSleepGoalOption() == H8)
+    {
+        settingsManager->setSelectedSleepGoal(480);
+        settingsManager->setSleepSettingState(SLEEP_SETTING_MENU);
+    }
+    else if (settingsManager->getSelectedSleepGoalOption() == H830)
+    {
+        settingsManager->setSelectedSleepGoal(510);
+        settingsManager->setSleepSettingState(SLEEP_SETTING_MENU);
+    }
+    else if (settingsManager->getSelectedSleepGoalOption() == H9)
+    {
+        settingsManager->setSelectedSleepGoal(540);
+        settingsManager->setSleepSettingState(SLEEP_SETTING_MENU);
+    }
+    else
+    {
+        settingsManager->setSleepSettingState(SLEEP_SETTING_MENU);
+    }
+}
 void UIManager::handleAlarmMenuNext()
 {
     if (alarmClock->isEnabled())
@@ -42,6 +99,27 @@ void UIManager::handleAlarmMenuNext()
         }
     }
 }
+
+void UIManager::handleClockSetupNext()
+{
+    if (settingsManager->getClockSettingState() == SET_HOUR_CLOCK)
+    {
+        hour++;
+        if (hour > 23)
+        {
+            hour = 0;
+        }
+    }
+    else if (settingsManager->getClockSettingState() == SET_MINUTE_CLOCK)
+    {
+        minutes++;
+        if (minutes > 59)
+        {
+            minutes = 0;
+        }
+    }
+}
+
 void UIManager::handleAlarmSetupNext()
 {
     if (alarmSetupState == SET_HOUR)
@@ -84,12 +162,15 @@ void UIManager::handleScreenSelect()
 
         *summary = sleepSession->getSummary();
 
-        sleepScore->calculateTotalScore(*summary);
+        sleepScore->calculateTotalScore(*summary, settingsManager->getSleepGoalMinutes());
     }
 
     if (currentScreen == ALARM)
     {
         handleAlarmSelect();
+    }
+    else if (currentScreen == SETTINGS)
+    {
     }
     else
     {
@@ -125,6 +206,56 @@ void UIManager::handleAlarmSelect()
         uistate = MENU;
     }
 }
+
+void UIManager::handleSettingsSelect()
+{
+    if (settingsManager->getSelectedOption() == TIME_OPTION)
+    {
+        hour = clock->getHours();
+        minutes = clock->getMinutes();
+
+        settingsManager->setClockSettingState(SET_HOUR_CLOCK);
+        settingsManager->setState(SET_TIME);
+    }
+    else if (settingsManager->getSelectedOption() == TIME_FORMAT_OPTION)
+    {
+        settingsManager->setState(SET_TIME_FORMAT);
+    }
+    else if (settingsManager->getSelectedOption() == DISPLAY_OPTION)
+    {
+        settingsManager->setState(DISPLAY_SETTINGS);
+    }
+    else if (settingsManager->getSelectedOption() == SLEEP_OPTION)
+    {
+        settingsManager->setState(SLEEP_SETTINGS);
+    }
+    else if (settingsManager->getSelectedOption() == BACK_OPTION)
+    {
+        uistate = MENU;
+    }
+}
+void UIManager::handleTimeFormatSetupNext()
+{
+    settingsManager->handleTimeFormatNext();
+}
+
+void UIManager::handleSettingClockSelect()
+{
+    if (settingsManager->getClockSettingState() == SET_HOUR_CLOCK)
+    {
+        settingsManager->setClockSettingState(SET_MINUTE_CLOCK);
+    }
+    else if (settingsManager->getClockSettingState() == SET_MINUTE_CLOCK)
+    {
+        settingsManager->setClockSettingState(CONFIRM_TIME);
+    }
+    else if (settingsManager->getClockSettingState() == CONFIRM_TIME)
+    {
+        clock->setTime(hour, minutes, 0);
+        settingsManager->setClockSettingState(SET_HOUR_CLOCK);
+        settingsManager->setState(MENU_SETTINGS);
+    }
+}
 void UIManager::handleAlarmSetupSelect()
 {
     if (alarmSetupState == SET_HOUR)
@@ -141,6 +272,44 @@ void UIManager::handleAlarmSetupSelect()
         uistate = MENU;
     }
 }
+void UIManager::handleTimeFormatSelect()
+{
+    if (settingsManager->getTimeFormatOption() == 0)
+    {
+        clock->setTimeFormat(FORMAT_24H);
+        uistate = MENU;
+    }
+    else if (settingsManager->getTimeFormatOption() == 1)
+    {
+        clock->setTimeFormat(FORMAT_12H);
+        uistate = MENU;
+    }
+    else
+    {
+        settingsManager->setState(MENU_SETTINGS);
+    }
+}
+
+void UIManager::handleDisplayBrightnessSelect()
+{
+    if (displayManager->getBrightnessOption() == LOW_B)
+    {
+        displayManager->setBrightness(80);
+    }
+    else if (displayManager->getBrightnessOption() == MID_B)
+    {
+        displayManager->setBrightness(160);
+    }
+    else if (displayManager->getBrightnessOption() == HIGH_B)
+    {
+        displayManager->setBrightness(255);
+    }
+    else
+    {
+        settingsManager->setState(MENU_SETTINGS);
+    }
+}
+
 void UIManager::handleAlarmButton()
 {
     if (buttons->isAlarmPressedBtn())
@@ -163,6 +332,33 @@ void UIManager::handleNextButton()
     {
         handleAlarmMenuNext();
     }
+    else if (uistate == SCREEN_VIEW && currentScreen == SETTINGS)
+    {
+        handleSettingsNext();
+        if (settingsManager->getState() == SET_TIME)
+        {
+            handleClockSetupNext();
+        }
+        else if (settingsManager->getState() == SET_TIME_FORMAT)
+        {
+            handleTimeFormatSetupNext();
+        }
+        else if (settingsManager->getState() == DISPLAY_SETTINGS)
+        {
+            handleDisplaySettingsNext();
+        }
+        else if (settingsManager->getState() == SLEEP_SETTINGS)
+        {
+            if (settingsManager->getSleepSettingState() == SLEEP_SETTING_MENU)
+            {
+                handleSleepSettingsNext();
+            }
+            else if (settingsManager->getSleepSettingState() == SLEEP_GOAL)
+            {
+                handleSleepGoalNext();
+            }
+        }
+    }
     else if (uistate == ALARM_SETUP)
     {
         handleAlarmSetupNext();
@@ -178,6 +374,37 @@ void UIManager::handleSelectButton()
     if (uistate == MENU)
     {
         handleMenuSelect();
+    }
+    else if (uistate == SCREEN_VIEW && currentScreen == SETTINGS)
+    {
+        if (settingsManager->getState() == SET_TIME)
+        {
+            handleSettingClockSelect();
+        }
+        else if (settingsManager->getState() == SET_TIME_FORMAT)
+        {
+            handleTimeFormatSelect();
+        }
+        else if (settingsManager->getState() == DISPLAY_SETTINGS)
+        {
+            handleDisplayBrightnessSelect();
+        }
+        else if (settingsManager->getState() == SLEEP_SETTINGS)
+        {
+            if (settingsManager->getSleepSettingState() == SLEEP_SETTING_MENU)
+            {
+                handleSleepSettingsSelect();
+            }
+            else if (settingsManager->getSleepSettingState() == SLEEP_GOAL)
+            {
+                handleSleepGoalselect();
+            }
+        }
+
+        else
+        {
+            handleSettingsSelect();
+        }
     }
     else if (uistate == SCREEN_VIEW)
     {
@@ -219,7 +446,35 @@ void UIManager::draw(SensorData *data)
             displayManager->drawAlarm(selectedAlarmOption);
             break;
         case SETTINGS:
-            displayManager->drawSettings();
+
+            if (settingsManager->getState() == MENU_SETTINGS)
+            {
+                displayManager->drawSettings(settingsManager->getSelectedOption());
+            }
+            else if (settingsManager->getState() == SET_TIME)
+            {
+                displayManager->drawSetTime(hour, minutes, settingsManager->getClockSettingState());
+            }
+            else if (settingsManager->getState() == SET_TIME_FORMAT)
+            {
+                displayManager->drawTimeFormat(settingsManager->getTimeFormatOption());
+            }
+            else if (settingsManager->getState() == DISPLAY_SETTINGS)
+            {
+                displayManager->drawDisplaySettings(displayManager->getBrightnessOption());
+            }
+            else if (settingsManager->getState() == SLEEP_SETTINGS)
+            {
+                if (settingsManager->getSleepSettingState() == SLEEP_SETTING_MENU)
+                {
+                    displayManager->drawSleepSettings(settingsManager->getSelectedSleepOption());
+                }
+                else if (settingsManager->getSleepSettingState() == SLEEP_GOAL)
+                {
+                    displayManager->drawSleepGoalSettings(settingsManager->getSelectedSleepGoalOption());
+                }
+            }
+
             break;
         }
     }

@@ -8,7 +8,7 @@ private:
 
 public:
     SleepScore();
-    int calculateSleepDuration(float time);
+    int calculateSleepDuration(float time, int sleepGoal);
     int calculateSleepSchedule();
     int calculateLightExposure(float averageLight);
     int calculateNoiseExposure(float averageNoise);
@@ -18,7 +18,7 @@ public:
     int calculateCarbonDioxide(float averageCO2);
     int phoneLeftonDevice();
     int userOpinionOnSleep();
-    int calculateTotalScore(const Summary &summary);
+    int calculateTotalScore(const Summary &summary, int sleepGoal);
     int returnTotalScore();
 };
 

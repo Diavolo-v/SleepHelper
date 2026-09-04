@@ -7,6 +7,7 @@
 #include "sleep_session.h"
 #include "sleep_score.h"
 #include "display_manager.h"
+#include "settings_manager.h"
 
 enum UIState
 {
@@ -50,7 +51,7 @@ private:
     SleepSession *sleepSession;
     SleepScore *sleepScore;
     DisplayManager *displayManager;
-
+    SettingsManager *settingsManager;
     Summary *summary;
 
     void handleMenuNext();
@@ -66,6 +67,21 @@ private:
     void handleNextButton();
     void handleSelectButton();
 
+    void handleSettingsNext();
+    void handleSettingsSelect();
+    void handleSettingClockSelect();
+    void handleClockSetupNext();
+    void handleTimeFormatSetupNext();
+    void handleTimeFormatSelect();
+
+    void handleDisplaySettingsNext();
+    void handleDisplayBrightnessSelect();
+
+    void handleSleepSettingsNext();
+    void handleSleepGoalNext();
+    void handleSleepSettingsSelect();
+    void handleSleepGoalselect();
+
 public:
     UIManager(ButtonManager *buttons,
               Clock *clock,
@@ -73,6 +89,7 @@ public:
               SleepSession *sleepSession,
               SleepScore *sleepScore,
               DisplayManager *displayManager,
+              SettingsManager *settingsManager,
               Summary *summary);
     void update();
     UIState getUIState();
