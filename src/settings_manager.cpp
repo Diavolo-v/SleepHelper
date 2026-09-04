@@ -43,3 +43,44 @@ int SettingsManager::getTimeFormatOption()
 {
     return selectedTimeFormatOption;
 }
+void SettingsManager::setSleepSettingState(SleepSettingState state)
+{
+    this->sleepSettings = state;
+}
+SleepSettingState SettingsManager::getSleepSettingState()
+{
+    return sleepSettings;
+}
+int SettingsManager::getSelectedSleepOption()
+{
+    return selectedSleepSettingOption;
+}
+
+void SettingsManager::handleSleepSettingNext()
+{
+    selectedSleepSettingOption++;
+    if (selectedSleepSettingOption > 1)
+    {
+        selectedSleepSettingOption = 0;
+    }
+}
+int SettingsManager::getSelectedSleepGoalOption()
+{
+    return selectedSleepGoalOption;
+}
+void SettingsManager::handleSleepGoalOptionNext()
+{
+    selectedSleepGoalOption++;
+    if (selectedSleepGoalOption > 4)
+    {
+        selectedSleepGoalOption = 0;
+    }
+}
+void SettingsManager::setSelectedSleepGoal(int goal)
+{
+    this->sleepGoalMinutes = goal;
+}
+int SettingsManager::getSleepGoalMinutes()
+{
+    return sleepGoalMinutes;
+}

@@ -4,32 +4,40 @@ SleepScore::SleepScore()
 {
     score = 0;
 }
-int SleepScore::calculateSleepDuration(float time)
+int SleepScore::calculateSleepDuration(float time, int sleepGoal)
 {
-    if (time < 4)
+    float ratio = time / (sleepGoal / 60.0);
+
+    if (ratio < 0.5)
     {
         return 0;
     }
-    if (time <= 5)
+
+    if (ratio < 0.625)
     {
         return 4;
     }
-    if (time <= 6)
+
+    if (ratio < 0.75)
     {
         return 8;
     }
-    if (time <= 7)
+
+    if (ratio < 0.875)
     {
         return 12;
     }
-    if (time <= 9)
+
+    if (ratio <= 1.125)
     {
         return 15;
     }
-    if (time <= 10)
+
+    if (ratio <= 1.25)
     {
         return 12;
     }
+
     return 8;
 }
 
@@ -115,14 +123,14 @@ int SleepScore::calculateNoiseExposure(float averageNoise)
     return 0;
 }
 
-int SleepScore::calculateTotalScore(const Summary &summary)
+int SleepScore::calculateTotalScore(const Summary &summary, int sleepGoal)
 {
 
     int total = 0;
 
     Serial.println(summary.durationHours);
 
-    total += calculateSleepDuration(summary.durationHours);
+    total += calculateSleepDuration(summary.durationHours, sleepGoal);
 
     if (summary.hasTemperature)
     {

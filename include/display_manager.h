@@ -41,7 +41,8 @@ public:
     void drawSetTime(int hour, int minute, TimeSetupState clockSetup);
     void drawTimeFormat(int selectedFormatOption);
     void drawDisplaySettings(int brightnessOptionCount);
-    void drawSleepSettings();
+    void drawSleepSettings(int selectedSleepSettingOption);
+    void drawSleepGoalSettings(int selectedSleepGoalOption);
 
     //
     void tempAndHumidity(float temperature, float humdity);

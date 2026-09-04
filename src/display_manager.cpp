@@ -510,3 +510,85 @@ void DisplayManager::drawDisplaySettings(int brightnessOptionCount)
 
     display->display();
 }
+void DisplayManager::drawSleepSettings(int selectedSleepSettingOption)
+{
+    display->setTextSize(1);
+
+    display->setCursor(5, 0);
+    display->print("SLEEP SETTINGS");
+    display->setCursor(10, 12);
+    if (selectedSleepSettingOption == 0)
+    {
+        display->print("> SLEEP GOAL");
+    }
+    else
+    {
+        display->print(" SLEEP GOAL");
+    }
+    display->setCursor(10, 22);
+    if (selectedSleepSettingOption == 1)
+    {
+        display->print("> BACK");
+    }
+    else
+    {
+        display->print(" BACK");
+    }
+
+    display->display();
+}
+
+void DisplayManager::drawSleepGoalSettings(int selectedSleepGoalOption)
+{
+    display->setTextSize(1);
+
+    display->setCursor(5, 0);
+    display->print("SLEEP GOAL");
+    display->setCursor(10, 12);
+    if (selectedSleepGoalOption == H730)
+    {
+        display->print("> 7h 30m");
+    }
+    else
+    {
+        display->print(" 7h 30m");
+    }
+    display->setCursor(10, 22);
+    if (selectedSleepGoalOption == H8)
+    {
+        display->print("> 8h");
+    }
+    else
+    {
+        display->print(" 8h");
+    }
+    display->setCursor(10, 32);
+    if (selectedSleepGoalOption == H830)
+    {
+        display->print("> 8h 30m");
+    }
+    else
+    {
+        display->print(" 8h 30m");
+    }
+    display->setCursor(10, 42);
+    if (selectedSleepGoalOption == H9)
+    {
+        display->print("> 9h");
+    }
+    else
+    {
+        display->print(" 9h");
+    }
+    display->setCursor(10, 52);
+    if (selectedSleepGoalOption == 4)
+    {
+        display->print("> BACK");
+    }
+    else
+    {
+        display->print(" BACK");
+    }
+
+    display->display();
+}

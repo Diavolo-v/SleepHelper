@@ -20,6 +20,10 @@ void UIManager::handleMenuNext()
         selectedScreen = 0;
     }
 }
+void UIManager::handleSleepSettingsNext()
+{
+    settingsManager->handleSleepSettingNext();
+}
 
 void UIManager::handleSettingsNext()
 {
@@ -28,6 +32,50 @@ void UIManager::handleSettingsNext()
 void UIManager::handleDisplaySettingsNext()
 {
     displayManager->handleDisplayNext();
+}
+void UIManager::handleSleepGoalNext()
+{
+    settingsManager->handleSleepGoalOptionNext();
+}
+
+void UIManager::handleSleepSettingsSelect()
+{
+    if (settingsManager->getSelectedSleepOption() == 0)
+    {
+        settingsManager->setSleepSettingState(SLEEP_GOAL);
+    }
+    else
+    {
+        settingsManager->setState(MENU_SETTINGS);
+    }
+}
+
+void UIManager::handleSleepGoalselect()
+{
+    if (settingsManager->getSelectedSleepGoalOption() == H730)
+    {
+        settingsManager->setSelectedSleepGoal(450);
+        settingsManager->setSleepSettingState(SLEEP_SETTING_MENU);
+    }
+    else if (settingsManager->getSelectedSleepGoalOption() == H8)
+    {
+        settingsManager->setSelectedSleepGoal(480);
+        settingsManager->setSleepSettingState(SLEEP_SETTING_MENU);
+    }
+    else if (settingsManager->getSelectedSleepGoalOption() == H830)
+    {
+        settingsManager->setSelectedSleepGoal(510);
+        settingsManager->setSleepSettingState(SLEEP_SETTING_MENU);
+    }
+    else if (settingsManager->getSelectedSleepGoalOption() == H9)
+    {
+        settingsManager->setSelectedSleepGoal(540);
+        settingsManager->setSleepSettingState(SLEEP_SETTING_MENU);
+    }
+    else
+    {
+        settingsManager->setSleepSettingState(SLEEP_SETTING_MENU);
+    }
 }
 void UIManager::handleAlarmMenuNext()
 {
@@ -114,7 +162,7 @@ void UIManager::handleScreenSelect()
 
         *summary = sleepSession->getSummary();
 
-        sleepScore->calculateTotalScore(*summary);
+        sleepScore->calculateTotalScore(*summary, settingsManager->getSleepGoalMinutes());
     }
 
     if (currentScreen == ALARM)
@@ -299,6 +347,17 @@ void UIManager::handleNextButton()
         {
             handleDisplaySettingsNext();
         }
+        else if (settingsManager->getState() == SLEEP_SETTINGS)
+        {
+            if (settingsManager->getSleepSettingState() == SLEEP_SETTING_MENU)
+            {
+                handleSleepSettingsNext();
+            }
+            else if (settingsManager->getSleepSettingState() == SLEEP_GOAL)
+            {
+                handleSleepGoalNext();
+            }
+        }
     }
     else if (uistate == ALARM_SETUP)
     {
@@ -329,6 +388,17 @@ void UIManager::handleSelectButton()
         else if (settingsManager->getState() == DISPLAY_SETTINGS)
         {
             handleDisplayBrightnessSelect();
+        }
+        else if (settingsManager->getState() == SLEEP_SETTINGS)
+        {
+            if (settingsManager->getSleepSettingState() == SLEEP_SETTING_MENU)
+            {
+                handleSleepSettingsSelect();
+            }
+            else if (settingsManager->getSleepSettingState() == SLEEP_GOAL)
+            {
+                handleSleepGoalselect();
+            }
         }
 
         else
@@ -395,7 +465,14 @@ void UIManager::draw(SensorData *data)
             }
             else if (settingsManager->getState() == SLEEP_SETTINGS)
             {
-                /* code */
+                if (settingsManager->getSleepSettingState() == SLEEP_SETTING_MENU)
+                {
+                    displayManager->drawSleepSettings(settingsManager->getSelectedSleepOption());
+                }
+                else if (settingsManager->getSleepSettingState() == SLEEP_GOAL)
+                {
+                    displayManager->drawSleepGoalSettings(settingsManager->getSelectedSleepGoalOption());
+                }
             }
 
             break;

@@ -77,6 +77,11 @@ private:
     void handleDisplaySettingsNext();
     void handleDisplayBrightnessSelect();
 
+    void handleSleepSettingsNext();
+    void handleSleepGoalNext();
+    void handleSleepSettingsSelect();
+    void handleSleepGoalselect();
+
 public:
     UIManager(ButtonManager *buttons,
               Clock *clock,
